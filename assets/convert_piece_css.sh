@@ -12,8 +12,9 @@ do
    #sed -i -e 's/.queen/piece.queen/g' $file
    #sed -i -e 's/.king/piece.king/g' $file
 
-   #basename=$(basename $file .css)
+   basename=$(basename $file .css)
    #sed -i -e "s/.cg-wrap/.$basename .cg-wrap/g" $file
 
-   echo import \"../assets/$file\"\;
+   #echo import \"../assets/$file\"\;
+   echo -n "\"$basename\", "
 done

@@ -1,4 +1,4 @@
-import { MarkdownPostProcessorContext } from "obsidian";
+import { MarkdownPostProcessorContext, Notice } from "obsidian";
 
 import { ChessboardConfig, parse_user_config } from "./ChessboardConfig";
 
@@ -46,12 +46,13 @@ import "../assets/board-css/blue.css";
 import "../assets/board-css/green.css";
 import "../assets/board-css/purple.css";
 import "../assets/board-css/ic.css";
+import { ChessboardSettings } from "./ChessboardSettings";
 
-export function draw_chessboard(source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext): void {
-    let user_config = parse_user_config(source);
-    console.log("user_config:", user_config);
-
-    new Chessboard(el, user_config);
+export function draw_chessboard(settings: ChessboardSettings) {
+    return (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
+        let user_config = parse_user_config(settings, source);
+        new Chessboard(el, user_config);
+    }
 }
 
 export class Chessboard {
@@ -77,7 +78,13 @@ export class Chessboard {
             },
         };
 
-        this.cg = Chessground(div, cg_config);
+        try {
+            this.cg = Chessground(div, cg_config);
+        }
+        catch(e) {
+            new Notice("Chessboard error: Invalid config");
+            return;
+        }
 
         // Activates the chess logic
         if (!user_config.viewOnly && !user_config.free) {
@@ -112,6 +119,7 @@ export class Chessboard {
             const ms = this.chess.moves({square: s, verbose: true});
             if (ms.length) dests.set(s, ms.map(m => m.to));
         });
+        console.log("dests", dests);
         return dests;
     }
 

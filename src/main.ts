@@ -1,22 +1,17 @@
 import { Plugin } from 'obsidian';
-import { Chessboard, draw_chessboard } from './Chessboard';
-import { ChessboardSettings, ChessboardSettingTab, DEFAULT_SETTINGS } from './settings';
+import { draw_chessboard } from './Chessboard';
+import { ChessboardSettings, ChessboardSettingTab, DEFAULT_SETTINGS } from './ChessboardSettings';
 
 export default class ChessboardPlugin extends Plugin {
 	settings: ChessboardSettings;
 
 	async onload() {
-		console.log('loading plugin');
-
 		await this.loadSettings();
-
 		this.addSettingTab(new ChessboardSettingTab(this.app, this));
-		this.registerMarkdownCodeBlockProcessor("chessboard", draw_chessboard);
+		this.registerMarkdownCodeBlockProcessor("chessboard", draw_chessboard(this.settings));
 	}
 
-	onunload() {
-		console.log('unloading plugin');
-	}
+	onunload() {}
 
 	async loadSettings() {
 		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());

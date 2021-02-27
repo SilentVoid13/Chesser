@@ -1,7 +1,7 @@
 {
-  "name": "",
-  "version": "0.9.7",
-  "description": "This is a sample plugin for Obsidian (https://obsidian.md)",
+  "name": "Chesser",
+  "version": "0.1.0",
+  "description": "A chess game viewer/editor",
   "main": "main.js",
   "scripts": {
     "dev": "rollup --config rollup.config.js -w",

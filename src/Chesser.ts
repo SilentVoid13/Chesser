@@ -1,6 +1,6 @@
 import { MarkdownPostProcessorContext, Notice } from "obsidian";
 
-import { ChessboardConfig, parse_user_config } from "./ChessboardConfig";
+import { ChesserConfig, parse_user_config } from "./ChesserConfig";
 
 import { Chess, ChessInstance } from 'chess.js';
 import { Chessground }  from 'chessground';
@@ -46,20 +46,20 @@ import "../assets/board-css/blue.css";
 import "../assets/board-css/green.css";
 import "../assets/board-css/purple.css";
 import "../assets/board-css/ic.css";
-import { ChessboardSettings } from "./ChessboardSettings";
+import { ChesserSettings } from "./ChesserSettings";
 
-export function draw_chessboard(settings: ChessboardSettings) {
+export function draw_chessboard(settings: ChesserSettings) {
     return (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
         let user_config = parse_user_config(settings, source);
-        new Chessboard(el, user_config);
+        new Chesser(el, user_config);
     }
 }
 
-export class Chessboard {
+export class Chesser {
     cg: Api;
     chess: ChessInstance;
 
-    constructor(el: HTMLElement, user_config: ChessboardConfig) {
+    constructor(el: HTMLElement, user_config: ChesserConfig) {
         let div = this.set_style(el, user_config.pieceStyle, user_config.boardStyle);
 
         if (user_config.fen === "") {
@@ -82,7 +82,7 @@ export class Chessboard {
             this.cg = Chessground(div, cg_config);
         }
         catch(e) {
-            new Notice("Chessboard error: Invalid config");
+            new Notice("Chesser error: Invalid config");
             return;
         }
 
@@ -98,7 +98,6 @@ export class Chessboard {
                 }
             });
         }
-
     }
 
     set_style(el: HTMLElement, pieceStyle: string, boardStyle: string) {

@@ -1,45 +1,49 @@
-## Obsidian Sample Plugin
+# Chesser
 
-This is a sample plugin for Obsidian (https://obsidian.md).
+A chess game viewer/editor for [Obsidian](https://obsidian.md/).
 
-This project uses Typescript to provide type checking and documentation.
-The repo depends on the latest plugin API (obsidian.d.ts) in Typescript Definition format, which contains TSDoc comments describing what it does.
+## Demonstration
 
-**Note:** The Obsidian API is still in early alpha and is subject to change at any time!
+![chesser_demo](imgs/chesser_demo.gif)
 
-This sample plugin demonstrates some of the basic functionality the plugin API can do.
-- Changes the default font color to red using `styles.css`.
-- Adds a ribbon icon, which shows a Notice when clicked.
-- Adds a command "Open Sample Modal" which opens a Modal.
-- Adds a plugin setting tab to the settings page.
-- Registers a global click event and output 'click' to the console.
-- Registers a global interval which logs 'setInterval' to the console.
+## Usage
 
+To use [Chesser](https://github.com/SilentVoid13/Chesser), you first need to declare a `chesser` code block like so:
 
-### Releasing new releases
+![chesser_block](imgs/chesser_block.png)
 
-- Update your `manifest.json` with your new version number, such as `1.0.1`, and the minimum Obsidian version required for your latest release.
-- Update your `versions.json` file with `"new-plugin-version": "minimum-obsidian-version"` so older versions of Obsidian can download an older version of your plugin that's compatible.
-- Create new GitHub release using your new version number as the "Tag version". Use the exact version number, don't include a prefix `v`. See here for an example: https://github.com/obsidianmd/obsidian-sample-plugin/releases
-- Upload the files `manifest.json`, `main.js`, `styles.css` as binary attachments.
-- Publish the release.
+This will create a basic chess board in the start position.
 
-### Adding your plugin to the community plugin list
+You can declare various settings **inside** the `chesser` code block, like a [FEN](https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation) string to describe a particular board position. You can find the full settings list below.
 
-- Publish an initial version.
-- Make sure you have a `README.md` file in the root of your repo.
-- Make a pull request at https://github.com/obsidianmd/obsidian-releases to add your plugin.
+## Settings
 
-### How to use
+Here are the available settings for a `chesser` code block:
 
-- Clone this repo.
-- `npm i` or `yarn` to install dependencies
-- `npm run dev` to start compilation in watch mode.
+| Name          | Possible Values                                              | Description                                                  |
+| ------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| `fen`         | A valid FEN string                                           | Starts the chess board with a particular position.           |
+| `orientation` | `white`/`black`                                              | Orientation of the board.                                    |
+| `pieceStyle`  | A valid piece style name.<br />Check [this](https://github.com/SilentVoid13/Chesser/tree/main/assets/piece-css) to view available styles. | Style of the pieces on the board.                            |
+| `boardStyle`  | A valid board style name.<br />Check [this](https://github.com/SilentVoid13/Chesser/tree/main/assets/board-css) to view available styles. | Style of the chess board.                                    |
+| `drawable`    | `true`/`false`                                               | Controls the ability to draw annotations (arrows, circles) on the board. |
+| `viewOnly`    | `true`/`false`                                               | If set to `true`, displays a static chess board (no moves, annotations, ...). |
+| `free`        | `true`/`false`                                               | If set to `true`, disables the chess logic, all moves are valid. |
 
-### Manually installing the plugin
+## Installation
 
-- Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`.
+After disabling Safe Mode, you can find third-party plugins in Settings > Community plugins > Browse > Search for "Chesser".
 
-### API Documentation
+After installing, you can then find the installed plugins under Settings > Community plugins. They need to be enabled in order to take effect. You can also uninstall them there.
 
-See https://github.com/obsidianmd/obsidian-api
+## Contributing
+
+Feel free to contribute.
+
+You can create an [issue](https://github.com/SilentVoid13/Chesser/issues) to report a bug, suggest an improvement for this plugin, etc.
+
+You can make a [pull request](https://github.com/SilentVoid13/Chesser/pulls) to contribute to this plugin development.
+
+## License
+
+[Chesser](https://github.com/SilentVoid13/Chesser) is licensed under the GNU AGPLv3 license. Refer to [LICENSE](https://github.com/SilentVoid13/Chesser/blob/master/LICENSE.TXT) for more informations.

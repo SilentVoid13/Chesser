@@ -1,8 +1,8 @@
 import { App, PluginSettingTab, Setting } from "obsidian";
-import { BOARD_STYLES, convert_boolean, PIECE_STYLES } from "./ChessboardConfig";
-import ChessboardPlugin from "./main";
+import { BOARD_STYLES, convert_boolean, PIECE_STYLES } from "./ChesserConfig";
+import ChesserPlugin from "./main";
 
-export interface ChessboardSettings {
+export interface ChesserSettings {
 	orientation: string;
 	viewOnly: boolean;
 	drawable: boolean;
@@ -11,7 +11,7 @@ export interface ChessboardSettings {
     boardStyle: string,
 }
 
-export const DEFAULT_SETTINGS: ChessboardSettings = {
+export const DEFAULT_SETTINGS: ChesserSettings = {
     orientation: "white",
     viewOnly: false,
     drawable: true,
@@ -20,10 +20,10 @@ export const DEFAULT_SETTINGS: ChessboardSettings = {
     boardStyle: "brown",
 }
 
-export class ChessboardSettingTab extends PluginSettingTab {
-	plugin: ChessboardPlugin;
+export class ChesserSettingTab extends PluginSettingTab {
+	plugin: ChesserPlugin;
 
-	constructor(app: App, plugin: ChessboardPlugin) {
+	constructor(app: App, plugin: ChesserPlugin) {
 		super(app, plugin);
 		this.plugin = plugin;
 	}
@@ -84,7 +84,7 @@ export class ChessboardSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName("Drawable")
-			.setDesc("If set to False, disables the ability to draw annotations (arrows, circles) on the board.")
+			.setDesc("Controls the ability to draw annotations (arrows, circles) on the board.")
 			.addDropdown(dropdown => {
 				dropdown.addOption("true", "True");
 				dropdown.addOption("false", "False");
@@ -99,7 +99,7 @@ export class ChessboardSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName("View Only")
-			.setDesc("If set to True, disables the ability to move the pieces around on the board.")
+			.setDesc("If set to True, displays a static chess board (no moves, annotations, ...).")
 			.addDropdown(dropdown => {
 				dropdown.addOption("true", "True");
 				dropdown.addOption("false", "False");

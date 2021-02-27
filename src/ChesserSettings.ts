@@ -1,6 +1,7 @@
-import { App, PluginSettingTab, Setting } from "obsidian";
 import { BOARD_STYLES, convert_boolean, PIECE_STYLES } from "./ChesserConfig";
 import ChesserPlugin from "./main";
+
+import { App, PluginSettingTab, Setting } from "obsidian";
 
 export interface ChesserSettings {
 	orientation: string;

@@ -11,8 +11,6 @@ export default class ChesserPlugin extends Plugin {
 		this.registerMarkdownCodeBlockProcessor("chesser", draw_chessboard(this.settings));
 	}
 
-	onunload() {}
-
 	async loadSettings() {
 		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
 	}

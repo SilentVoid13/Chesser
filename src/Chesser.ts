@@ -1,13 +1,13 @@
-import { MarkdownPostProcessorContext, Notice } from "obsidian";
-
 import { ChesserConfig, parse_user_config } from "./ChesserConfig";
+import { ChesserSettings } from "./ChesserSettings";
 
+import { MarkdownPostProcessorContext, Notice } from "obsidian";
 import { Chess, ChessInstance } from 'chess.js';
 import { Chessground }  from 'chessground';
 import { Api } from "chessground/api";
 import { Color, Key } from "chessground/types";
 
-// To bundle it with rollup
+// To bundle all css files in styles.css with rollup
 import "../assets/custom.css";
 import "chessground/assets/chessground.base.css";
 import "chessground/assets/chessground.brown.css";
@@ -46,7 +46,6 @@ import "../assets/board-css/blue.css";
 import "../assets/board-css/green.css";
 import "../assets/board-css/purple.css";
 import "../assets/board-css/ic.css";
-import { ChesserSettings } from "./ChesserSettings";
 
 export function draw_chessboard(settings: ChesserSettings) {
     return (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
@@ -71,7 +70,7 @@ export class Chesser {
 
         const cg_config = {
             fen: user_config.fen,
-            orientation: user_config.orientation,
+            orientation: user_config.orientation as Color,
             viewOnly: user_config.viewOnly,
             drawable: {
                 enabled: user_config.drawable,
@@ -87,7 +86,7 @@ export class Chesser {
         }
 
         // Activates the chess logic
-        if (!user_config.viewOnly && !user_config.free) {
+        if (!user_config.free) {
             this.cg.set({
                 movable: {
                     free: false,
@@ -118,7 +117,6 @@ export class Chesser {
             const ms = this.chess.moves({square: s, verbose: true});
             if (ms.length) dests.set(s, ms.map(m => m.to));
         });
-        console.log("dests", dests);
         return dests;
     }
 

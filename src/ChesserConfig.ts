@@ -14,6 +14,7 @@ export function parse_user_config(settings: ChesserSettings, content: string) {
         fen: "",
     };
 
+    // Kinda ugly way of parsing the config, but I couldn't find something better
     const user_config: ChesserConfig = {
         fen: parse_field(content, "fen") ?? default_chesser_config.fen,
         orientation: check_valid_value(parse_field(content, "orientation"), ORIENTATIONS) ?? default_chesser_config.orientation,
@@ -23,7 +24,6 @@ export function parse_user_config(settings: ChesserSettings, content: string) {
         pieceStyle: check_valid_value(parse_field(content, "pieceStyle"), PIECE_STYLES) ?? default_chesser_config.pieceStyle,
         boardStyle: check_valid_value(parse_field(content, "boardStyle"), BOARD_STYLES) ?? default_chesser_config.boardStyle,
     };
-    console.log("user_config:", user_config);
 
     return user_config;
 }
@@ -45,7 +45,7 @@ function check_valid_value(v: string, values: string[]) {
 }
 
 export function convert_boolean(v: string) {
-    switch (v) {
+    switch (v.toLowerCase()) {
         case "true":
             return true;
         case "false":

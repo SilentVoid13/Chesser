@@ -45,6 +45,9 @@ function check_valid_value(v: string, values: string[]) {
 }
 
 export function convert_boolean(v: string) {
+    if (!v) {
+        return null;
+    }
     switch (v.toLowerCase()) {
         case "true":
             return true;

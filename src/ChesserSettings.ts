@@ -1,4 +1,4 @@
-import { BOARD_STYLES, convert_boolean, PIECE_STYLES } from "./ChesserConfig";
+import { BOARD_STYLES, PIECE_STYLES } from "./ChesserConfig";
 import ChesserPlugin from "./main";
 
 import { App, PluginSettingTab, Setting } from "obsidian";
@@ -86,48 +86,37 @@ export class ChesserSettingTab extends PluginSettingTab {
 		new Setting(containerEl)
 			.setName("Drawable")
 			.setDesc("Controls the ability to draw annotations (arrows, circles) on the board.")
-			.addDropdown(dropdown => {
-				dropdown.addOption("true", "True");
-				dropdown.addOption("false", "False");
-
-				dropdown
-					.setValue(this.plugin.settings.drawable.toString())
+			.addToggle(toggle => {
+				toggle
+					.setValue(this.plugin.settings.drawable)
 					.onChange(drawable => {
-						this.plugin.settings.drawable = convert_boolean(drawable);
+						this.plugin.settings.drawable = drawable;
 						this.plugin.saveSettings();
 					});
 			});
 
 		new Setting(containerEl)
 			.setName("View Only")
-			.setDesc("If set to True, displays a static chess board (no moves, annotations, ...).")
-			.addDropdown(dropdown => {
-				dropdown.addOption("true", "True");
-				dropdown.addOption("false", "False");
-
-				dropdown
-					.setValue(this.plugin.settings.viewOnly.toString())
+			.setDesc("If enabled, displays a static chess board (no moves, annotations, ...).")
+			.addToggle(toggle => {
+				toggle
+					.setValue(this.plugin.settings.viewOnly)
 					.onChange(viewOnly => {
-						this.plugin.settings.viewOnly = convert_boolean(viewOnly);
+						this.plugin.settings.drawable = viewOnly;
 						this.plugin.saveSettings();
 					});
 			});
 
 		new Setting(containerEl)
 			.setName("Free")
-			.setDesc("If set to True, disables the chess logic, all moves are valid.")
-			.addDropdown(dropdown => {
-				dropdown.addOption("true", "True");
-				dropdown.addOption("false", "False");
-
-				dropdown
-					.setValue(this.plugin.settings.free.toString())
+			.setDesc("If enabled, disables the chess logic, all moves are valid.")
+			.addToggle(toggle => {
+				toggle	
+					.setValue(this.plugin.settings.free)
 					.onChange(free => {
-						this.plugin.settings.free = convert_boolean(free);
+						this.plugin.settings.free = free;
 						this.plugin.saveSettings();
 					});
 			});
 	}
 }
-
-

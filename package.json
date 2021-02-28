@@ -1,6 +1,6 @@
 {
   "name": "Chesser",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "A chess game viewer/editor",
   "main": "main.js",
   "scripts": {

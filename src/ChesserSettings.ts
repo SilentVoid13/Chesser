@@ -102,7 +102,7 @@ export class ChesserSettingTab extends PluginSettingTab {
 				toggle
 					.setValue(this.plugin.settings.viewOnly)
 					.onChange(viewOnly => {
-						this.plugin.settings.drawable = viewOnly;
+						this.plugin.settings.viewOnly = viewOnly;
 						this.plugin.saveSettings();
 					});
 			});

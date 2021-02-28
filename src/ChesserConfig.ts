@@ -14,7 +14,7 @@ export function parse_user_config(settings: ChesserSettings, content: string) {
         fen: "",
     };
 
-    // Kinda ugly way of parsing the config, but I couldn't find something better
+    // Kinda ugly way of parsing the user config, but I couldn't find something better
     const user_config: ChesserConfig = {
         fen: parse_field(content, "fen") ?? default_chesser_config.fen,
         orientation: check_valid_value(parse_field(content, "orientation"), ORIENTATIONS) ?? default_chesser_config.orientation,

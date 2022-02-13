@@ -1,5 +1,64 @@
 .cg-wrap {
-    width: 409px;
-    height: 409px;
-    margin: auto;
+  width: 400px;
+  height: 400px;
+}
+
+.chesser-container {
+  display: flex;
+  align-items: flex-start;
+  height: 400px;
+  width: 100%;
+}
+
+.chess-menu-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  margin-left: 24px;
+  width: calc(100% - 424px);
+}
+
+.chess-toolbar-container {
+  border-top: 1px solid var(--background-modifier-border);
+  margin-top: auto;
+  padding-top: 12px;
+}
+
+.chess-turn-text {
+  font-weight: medium;
+  margin-bottom: 8px;
+}
+
+/* temporary */
+.cg-wrap coords {
+  opacity: 0 !important;
+}
+
+.chess-move-list {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.chess-move {
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 80%;
+  padding: 4px;
+  width: 50%;
+}
+
+.chess-move-active {
+  color: var(--text-normal);
+  font-weight: 500;
+}
+
+.chess-menu-section {
+  border-top: 1px solid var(--background-modifier-border);
+  padding: 16px 0;
+}
+
+.chess-starting-position-dropdown {
+  margin-top: 8px;
+  margin-bottom: 12px;
+  width: 100%;
 }

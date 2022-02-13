@@ -1,11 +1,23 @@
-import { ChesserConfig, parse_user_config } from "./ChesserConfig";
-import { ChesserSettings } from "./ChesserSettings";
-
-import { MarkdownPostProcessorContext, Notice } from "obsidian";
-import { Chess, ChessInstance } from 'chess.js';
-import { Chessground }  from 'chessground';
+import { nanoid } from "nanoid";
+import {
+  App,
+  EditorPosition,
+  MarkdownPostProcessorContext,
+  MarkdownRenderChild,
+  MarkdownView,
+  Notice,
+  parseYaml,
+  stringifyYaml,
+} from "obsidian";
+import { Chess, ChessInstance, Move, Square } from "chess.js";
+import { Chessground } from "chessground";
 import { Api } from "chessground/api";
 import { Color, Key } from "chessground/types";
+import { DrawShape } from "chessground/draw";
+
+import { ChesserConfig, parse_user_config } from "./ChesserConfig";
+import { ChesserSettings } from "./ChesserSettings";
+import ChesserMenu from "./menu";
 
 // To bundle all css files in styles.css with rollup
 import "../assets/custom.css";
@@ -46,95 +58,346 @@ import "../assets/board-css/blue.css";
 import "../assets/board-css/green.css";
 import "../assets/board-css/purple.css";
 import "../assets/board-css/ic.css";
+import debug from "./debug";
 
-export function draw_chessboard(settings: ChesserSettings) {
-    return (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
-        let user_config = parse_user_config(settings, source);
-        new Chesser(el, user_config);
-    }
+export function draw_chessboard(app: App, settings: ChesserSettings) {
+  return (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
+    let user_config = parse_user_config(settings, source);
+    ctx.addChild(new Chesser(el, ctx, user_config, app));
+  };
 }
 
-export class Chesser {
-    cg: Api;
-    chess: ChessInstance;
+function read_state(id: string) {
+  const savedDataStr = localStorage.getItem(`chesser-${id}`);
+  try {
+    return JSON.parse(savedDataStr);
+  } catch (e) {
+    console.error(e);
+  }
+  return {};
+}
 
-    constructor(el: HTMLElement, user_config: ChesserConfig) {
-        let div = this.set_style(el, user_config.pieceStyle, user_config.boardStyle);
+function write_state(id: string, game_state: ChesserConfig) {
+  localStorage.setItem(`chesser-${id}`, JSON.stringify(game_state));
+}
 
-        if (user_config.fen === "") {
-            this.chess = new Chess();
-        }
-        else {
-            this.chess = new Chess(user_config.fen);
-        }
+export class Chesser extends MarkdownRenderChild {
+  private ctx: MarkdownPostProcessorContext;
+  private app: App;
 
-        const cg_config = {
-            fen: user_config.fen,
-            orientation: user_config.orientation as Color,
-            viewOnly: user_config.viewOnly,
-            drawable: {
-                enabled: user_config.drawable,
-            },
-        };
+  private id: string;
+  private cg: Api;
+  private chess: ChessInstance;
 
-        try {
-            this.cg = Chessground(div, cg_config);
-        }
-        catch(e) {
-            new Notice("Chesser error: Invalid config");
-            return;
-        }
+  private menu: ChesserMenu;
+  private moves: Move[];
 
-        // Activates the chess logic
-        if (!user_config.free) {
-            this.cg.set({
-                movable: {
-                    free: false,
-                    dests: this.dests(),
-                    events: {
-                        after: this.refresh_moves(),
-                    }
-                }
-            });
-        }
-    }
+  public currentMoveIdx: number;
 
-    set_style(el: HTMLElement, pieceStyle: string, boardStyle: string) {
-        let div = document.createElement("div");
-        el.addClass(pieceStyle);
-        el.addClass(`${boardStyle}-board`)
-        el.appendChild(div);
-        return div;
-    }
+  constructor(
+    containerEl: HTMLElement,
+    ctx: MarkdownPostProcessorContext,
+    user_config: ChesserConfig,
+    app: App
+  ) {
+    super(containerEl);
 
-    color_turn(): Color {
-        return (this.chess.turn() === 'w') ? 'white' : 'black';
-    }
+    this.app = app;
+    this.ctx = ctx;
+    this.id = user_config.id ?? nanoid(8);
+    this.chess = new Chess();
 
-    dests(): Map<Key, Key[]> {
-        const dests = new Map();
-        this.chess.SQUARES.forEach(s => {
-            const ms = this.chess.moves({square: s, verbose: true});
-            if (ms.length) dests.set(s, ms.map(m => m.to));
+    const saved_config = read_state(this.id);
+    const config = Object.assign({}, user_config, saved_config);
+
+    this.sync_board_with_gamestate = this.sync_board_with_gamestate.bind(this);
+    this.save_move = this.save_move.bind(this);
+    this.save_shapes = this.save_shapes.bind(this);
+
+    // Save `id` into the codeblock yaml
+    if (user_config.id === undefined) {
+      this.app.workspace.onLayoutReady(() => {
+        window.setImmediate(() => {
+          this.write_config({ id: this.id });
         });
-        return dests;
+      });
     }
 
-    check(): boolean {
-        return this.chess.in_check();
+    if (config.pgn) {
+      debug(() => console.debug("loading from pgn", config.pgn));
+      this.chess.load_pgn(config.pgn);
+    } else if (config.fen) {
+      debug(() => console.debug("loading from fen", config.fen));
+      this.chess.load(config.fen);
     }
 
-    refresh_moves() {
-        return (orig: any, dest: any) => {
-            this.chess.move({from: orig, to: dest});
-            this.cg.set({
-                check: this.check(),
-                turnColor: this.color_turn(),
-                movable: {
-                    color: this.color_turn(),
-                    dests: this.dests(),
-                }
-            });
-        }
+    this.moves = config.moves ?? this.chess.history({ verbose: true });
+    this.currentMoveIdx = config.currentMoveIdx ?? this.moves.length - 1;
+
+    let lastMove: [Key, Key] = undefined;
+    if (this.currentMoveIdx >= 0) {
+      const move = this.moves[this.currentMoveIdx];
+      lastMove = [move.from, move.to];
     }
+
+    // Setup UI
+    this.set_style(containerEl, config.pieceStyle, config.boardStyle);
+    try {
+      this.cg = Chessground(containerEl.createDiv(), {
+        fen: this.chess.fen(),
+        addDimensionsCssVars: true,
+        lastMove,
+        orientation: config.orientation as Color,
+        viewOnly: config.viewOnly,
+        drawable: {
+          enabled: config.drawable,
+          onChange: this.save_shapes,
+        },
+      });
+    } catch (e) {
+      new Notice("Chesser error: Invalid config");
+      console.error(e);
+      return;
+    }
+
+    // Activates the chess logic
+    this.setFreeMove(config.free);
+
+    // Draw saved shapes
+    if (config.shapes) {
+      this.app.workspace.onLayoutReady(() => {
+        window.setTimeout(() => {
+          this.sync_board_with_gamestate(false);
+          this.cg.setShapes(config.shapes);
+        }, 100);
+      });
+    }
+
+    this.menu = new ChesserMenu(containerEl, this);
+  }
+
+  private set_style(el: HTMLElement, pieceStyle: string, boardStyle: string) {
+    el.addClasses([pieceStyle, `${boardStyle}-board`, "chesser-container"]);
+  }
+
+  private get_section_range(): [EditorPosition, EditorPosition] {
+    const sectionInfo = this.ctx.getSectionInfo(this.containerEl);
+
+    return [
+      {
+        line: sectionInfo.lineStart + 1,
+        ch: 0,
+      },
+      {
+        line: sectionInfo.lineEnd,
+        ch: 0,
+      },
+    ];
+  }
+
+  private get_config(view: MarkdownView): ChesserConfig | undefined {
+    const [from, to] = this.get_section_range();
+    const codeblockText = view.editor.getRange(from, to);
+    try {
+      return parseYaml(codeblockText);
+    } catch (e) {
+      debug(() =>
+        console.debug("failed to parse codeblock's yaml config", codeblockText)
+      );
+      // failed to parse. show error...
+    }
+
+    return undefined;
+  }
+
+  private write_config(config: Partial<ChesserConfig>) {
+    debug(() => console.debug("writing config to localStorage", config));
+    const view = this.app.workspace.getActiveViewOfType(MarkdownView);
+    if (!view) {
+      new Notice("Chesser: Failed to retrieve active view");
+      console.error("Chesser: Failed to retrieve view when writing config");
+    }
+    try {
+      const updated = stringifyYaml({
+        ...this.get_config(view),
+        ...config,
+      });
+
+      const [from, to] = this.get_section_range();
+      view.editor.replaceRange(updated, from, to);
+    } catch (e) {
+      // failed to parse. show error...
+      console.error("failed to write config", e);
+    }
+  }
+
+  private save_move() {
+    const config = read_state(this.id);
+    write_state(this.id, {
+      ...config,
+      currentMoveIdx: this.currentMoveIdx,
+      moves: this.moves,
+      pgn: this.chess.pgn(),
+    });
+  }
+
+  private save_shapes(shapes: DrawShape[]) {
+    const config = read_state(this.id);
+    write_state(this.id, {
+      ...config,
+      shapes,
+    });
+  }
+
+  private sync_board_with_gamestate(shouldSave: boolean = true) {
+    this.cg.set({
+      check: this.check(),
+      turnColor: this.color_turn(),
+      movable: {
+        free: false,
+        color: this.color_turn(),
+        dests: this.dests(),
+      },
+    });
+
+    this.menu?.redrawMoveList();
+    if (shouldSave) {
+      this.save_move();
+    }
+  }
+
+  public color_turn(): Color {
+    return this.chess.turn() === "w" ? "white" : "black";
+  }
+
+  public dests(): Map<Key, Key[]> {
+    const dests = new Map();
+    this.chess.SQUARES.forEach((s) => {
+      const ms = this.chess.moves({ square: s, verbose: true });
+      if (ms.length)
+        dests.set(
+          s,
+          ms.map((m) => m.to)
+        );
+    });
+    return dests;
+  }
+
+  public check(): boolean {
+    return this.chess.in_check();
+  }
+
+  public undo_move() {
+    this.update_turn_idx(this.currentMoveIdx - 1);
+  }
+
+  public redo_move() {
+    this.update_turn_idx(this.currentMoveIdx + 1);
+  }
+
+  public update_turn_idx(moveIdx: number): void {
+    if (moveIdx < -1 || moveIdx >= this.moves.length) {
+      return;
+    }
+
+    const isUndoing = moveIdx < this.currentMoveIdx;
+    if (isUndoing) {
+      while (this.currentMoveIdx > moveIdx) {
+        this.currentMoveIdx--;
+        this.chess.undo();
+      }
+    } else {
+      while (this.currentMoveIdx < moveIdx) {
+        this.currentMoveIdx++;
+        const move = this.moves[this.currentMoveIdx];
+        this.chess.move(move);
+      }
+    }
+
+    let lastMove: [Key, Key] = undefined;
+    if (this.currentMoveIdx >= 0) {
+      const move = this.moves[this.currentMoveIdx];
+      lastMove = [move.from, move.to];
+    }
+
+    this.cg.set({
+      fen: this.chess.fen(),
+      lastMove,
+    });
+    this.sync_board_with_gamestate();
+  }
+
+  public setFreeMove(enabled: boolean): void {
+    if (enabled) {
+      this.cg.set({
+        events: {
+          move: this.save_move,
+        },
+        movable: {
+          free: true,
+          color: "both",
+          dests: undefined,
+        },
+      });
+    } else {
+      this.cg.set({
+        events: {
+          move: (orig: any, dest: any) => {
+            const move = this.chess.move({ from: orig, to: dest });
+            this.currentMoveIdx++;
+            this.moves = [...this.moves.slice(0, this.currentMoveIdx), move];
+            this.sync_board_with_gamestate();
+          },
+        },
+      });
+      this.sync_board_with_gamestate();
+    }
+  }
+
+  public turn() {
+    return this.chess.turn();
+  }
+
+  public history() {
+    return this.moves;
+  }
+
+  public flipBoard() {
+    return this.cg.toggleOrientation();
+  }
+
+  public getBoardState() {
+    return this.cg.state;
+  }
+
+  public getFen() {
+    return this.chess.fen();
+  }
+
+  public loadFen(fen: string, moves?: string[]): void {
+    let lastMove: [Key, Key] = undefined;
+    if (moves) {
+      this.currentMoveIdx = -1;
+      this.moves = [];
+      this.chess.reset();
+
+      moves.forEach((fullMove) => {
+        fullMove.split(" ").forEach((halfMove) => {
+          const move = this.chess.move(halfMove);
+          this.moves.push(move);
+          this.currentMoveIdx++;
+        });
+      });
+
+      if (this.currentMoveIdx >= 0) {
+        const move = this.moves[this.currentMoveIdx];
+        lastMove = [move.from, move.to];
+      }
+    } else {
+      this.chess.load(fen);
+    }
+
+    this.cg.set({ fen: this.chess.fen(), lastMove });
+    this.sync_board_with_gamestate();
+  }
 }

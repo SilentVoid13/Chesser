@@ -12,7 +12,6 @@ export default class ChesserMenu {
     this.chesser = chesser;
 
     this.containerEl = parentEl.createDiv("chess-menu-container", (containerEl) => {
-      containerEl;
       containerEl.createDiv({ cls: "chess-menu-section" }, (sectionEl) => {
         const selectEl = sectionEl.createEl(
           "select",
@@ -39,6 +38,7 @@ export default class ChesserMenu {
                 });
               });
             });
+
             const startingPosition = this.getStartingPositionFromFen(chesser.getFen());
             const startingPositionName = startingPosition
               ? startingPosition.eco
@@ -74,7 +74,9 @@ export default class ChesserMenu {
       });
     });
 
-    this.movesListEl = this.containerEl.createDiv({ cls: "chess-menu-section" });
+    this.movesListEl = this.containerEl.createDiv({
+      cls: "chess-menu-section chess-menu-section-tall",
+    });
 
     this.redrawMoveList();
     this.createToolbar();
@@ -136,23 +138,21 @@ export default class ChesserMenu {
 
   redrawMoveList() {
     this.movesListEl.empty();
-    this.movesListEl.createDiv({ cls: "chess-moves-list-container" }, (sectionEl) => {
-      sectionEl.createDiv({
-        text: this.chesser.turn() === "b" ? "Black's turn" : "White's turn",
-        cls: "chess-turn-text",
-      });
-      sectionEl.createDiv("chess-move-list", (moveListEl) => {
-        this.chesser.history().forEach((move, idx) => {
-          const moveEl = moveListEl.createDiv({
-            cls: `chess-move ${
-              this.chesser.currentMoveIdx === idx ? "chess-move-active" : ""
-            }`,
-            text: move.san,
-          });
-          moveEl.addEventListener("click", (ev) => {
-            ev.preventDefault();
-            this.chesser.update_turn_idx(idx);
-          });
+    this.movesListEl.createDiv({
+      text: this.chesser.turn() === "b" ? "Black's turn" : "White's turn",
+      cls: "chess-turn-text",
+    });
+    this.movesListEl.createDiv("chess-move-list", (moveListEl) => {
+      this.chesser.history().forEach((move, idx) => {
+        const moveEl = moveListEl.createDiv({
+          cls: `chess-move ${
+            this.chesser.currentMoveIdx === idx ? "chess-move-active" : ""
+          }`,
+          text: move.san,
+        });
+        moveEl.addEventListener("click", (ev) => {
+          ev.preventDefault();
+          this.chesser.update_turn_idx(idx);
         });
       });
     });

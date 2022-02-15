@@ -21,12 +21,12 @@
 .chess-toolbar-container {
   border-top: 1px solid var(--background-modifier-border);
   margin-top: auto;
-  padding-top: 12px;
+  padding-top: 8px;
 }
 
 .chess-turn-text {
-  font-weight: medium;
-  margin-bottom: 8px;
+  font-weight: 500;
+  margin: 8px 0;
 }
 
 /* temporary */
@@ -37,6 +37,7 @@
 .chess-move-list {
   display: flex;
   flex-wrap: wrap;
+  overflow-y: scroll;
 }
 
 .chess-move {
@@ -54,7 +55,13 @@
 
 .chess-menu-section {
   border-top: 1px solid var(--background-modifier-border);
-  padding: 16px 0;
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+}
+
+.chess-menu-section-tall {
+  min-height: 0;
 }
 
 .chess-starting-position-dropdown {

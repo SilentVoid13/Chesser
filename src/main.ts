@@ -9,6 +9,10 @@ export default class ChesserPlugin extends Plugin {
     await this.loadSettings();
     this.addSettingTab(new ChesserSettingTab(this.app, this));
     this.registerMarkdownCodeBlockProcessor(
+      "chesser", // keep for backwards compatibility/branding
+      draw_chessboard(this.app, this.settings)
+    );
+    this.registerMarkdownCodeBlockProcessor(
       "chess",
       draw_chessboard(this.app, this.settings)
     );

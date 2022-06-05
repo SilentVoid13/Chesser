@@ -61,7 +61,11 @@ import "../assets/board-css/ic.css";
 import debug from "./debug";
 
 export function draw_chessboard(app: App, settings: ChesserSettings) {
-  return (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
+  return (
+    source: string,
+    el: HTMLElement,
+    ctx: MarkdownPostProcessorContext
+  ) => {
     let user_config = parse_user_config(settings, source);
     ctx.addChild(new Chesser(el, ctx, user_config, app));
   };
@@ -372,6 +376,10 @@ export class Chesser extends MarkdownRenderChild {
 
   public getFen() {
     return this.chess.fen();
+  }
+
+  public getPgn() {
+    return this.chess.pgn();
   }
 
   public loadFen(fen: string, moves?: string[]): void {

@@ -11,68 +11,75 @@ export default class ChesserMenu {
   constructor(parentEl: HTMLElement, chesser: Chesser) {
     this.chesser = chesser;
 
-    this.containerEl = parentEl.createDiv("chess-menu-container", (containerEl) => {
-      containerEl.createDiv({ cls: "chess-menu-section" }, (sectionEl) => {
-        const selectEl = sectionEl.createEl(
-          "select",
-          {
-            cls: "dropdown chess-starting-position-dropdown",
-          },
-          (el) => {
-            el.createEl("option", {
-              value: "starting-position",
-              text: "Starting Position",
-            });
-            el.createEl("option", {
-              value: "custom",
-              text: "Custom",
-            });
-            el.createEl("optgroup", {}, (optgroup) => {
-              optgroup.label = "Popular Openings";
-              startingPositons.forEach((category) => {
-                category.items.forEach((item) => {
-                  optgroup.createEl("option", {
-                    value: item.eco,
-                    text: item.name,
+    this.containerEl = parentEl.createDiv(
+      "chess-menu-container",
+      (containerEl) => {
+        containerEl.createDiv({ cls: "chess-menu-section" }, (sectionEl) => {
+          const selectEl = sectionEl.createEl(
+            "select",
+            {
+              cls: "dropdown chess-starting-position-dropdown",
+            },
+            (el) => {
+              el.createEl("option", {
+                value: "starting-position",
+                text: "Starting Position",
+              });
+              el.createEl("option", {
+                value: "custom",
+                text: "Custom",
+              });
+              el.createEl("optgroup", {}, (optgroup) => {
+                optgroup.label = "Popular Openings";
+                startingPositons.forEach((category) => {
+                  category.items.forEach((item) => {
+                    optgroup.createEl("option", {
+                      value: item.eco,
+                      text: item.name,
+                    });
                   });
                 });
               });
-            });
 
-            const startingPosition = this.getStartingPositionFromFen(chesser.getFen());
-            const startingPositionName = startingPosition
-              ? startingPosition.eco
-              : "custom";
-            el.value = startingPositionName;
-          }
-        );
+              const startingPosition = this.getStartingPositionFromFen(
+                chesser.getFen()
+              );
+              const startingPositionName = startingPosition
+                ? startingPosition.eco
+                : "custom";
+              el.value = startingPositionName;
+            }
+          );
 
-        selectEl.addEventListener("change", (ev) => {
-          const value = (ev.target as any).value;
+          selectEl.addEventListener("change", (ev) => {
+            const value = (ev.target as any).value;
 
-          if (value === "starting-position") {
-            this.chesser.loadFen(
-              "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
-              []
-            );
-            return;
-          }
+            if (value === "starting-position") {
+              this.chesser.loadFen(
+                "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+                []
+              );
+              return;
+            }
 
-          const startingPosition = startingPositons
-            .flatMap((cat) => cat.items)
-            .find((item) => item.eco === value);
+            const startingPosition = startingPositons
+              .flatMap((cat) => cat.items)
+              .find((item) => item.eco === value);
 
-          this.chesser.loadFen(startingPosition.fen, startingPosition.moves);
-        });
-
-        new Setting(sectionEl).setName("Enable Free Move?").addToggle((toggle) => {
-          toggle.setValue(this.chesser.getBoardState().movable.free);
-          toggle.onChange((value) => {
-            this.chesser.setFreeMove(value);
+            this.chesser.loadFen(startingPosition.fen, startingPosition.moves);
           });
+
+          new Setting(sectionEl)
+            .setName("Enable Free Move?")
+            .addToggle((toggle) => {
+              toggle.setValue(this.chesser.getBoardState().movable.free);
+              toggle.onChange((value) => {
+                this.chesser.setFreeMove(value);
+              });
+            });
         });
-      });
-    });
+      }
+    );
 
     this.movesListEl = this.containerEl.createDiv({
       cls: "chess-menu-section chess-menu-section-tall",
@@ -83,7 +90,9 @@ export default class ChesserMenu {
   }
 
   getStartingPositionFromFen(fen: string) {
-    return startingPositons.flatMap((cat) => cat.items).find((item) => item.eco === fen);
+    return startingPositons
+      .flatMap((cat) => cat.items)
+      .find((item) => item.eco === fen);
   }
 
   createToolbar() {
@@ -132,6 +141,15 @@ export default class ChesserMenu {
       btn.addEventListener("click", (e: MouseEvent) => {
         e.preventDefault();
         navigator.clipboard.writeText(this.chesser.getFen());
+      });
+    });
+
+    btnContainer.createEl("a", "view-action", (btn: HTMLAnchorElement) => {
+      btn.ariaLabel = "Copy PGN";
+      setIcon(btn, "pin");
+      btn.addEventListener("click", (e: MouseEvent) => {
+        e.preventDefault();
+        navigator.clipboard.writeText(this.chesser.getPgn());
       });
     });
   }

@@ -173,7 +173,9 @@ export class Chesser extends MarkdownRenderChild {
       });
     }
 
-    this.menu = new ChesserMenu(containerEl, this);
+    if (!config.viewOnly) {
+      this.menu = new ChesserMenu(containerEl, this);
+    }
   }
 
   private set_style(el: HTMLElement, pieceStyle: string, boardStyle: string) {

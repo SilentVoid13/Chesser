@@ -8,6 +8,7 @@ import {
   Notice,
   parseYaml,
   stringifyYaml,
+  FileSystemAdapter
 } from "obsidian";
 import { Chess, ChessInstance, Move, Square } from "chess.js";
 import { Chessground } from "chessground";
@@ -59,6 +60,7 @@ import "../assets/board-css/green.css";
 import "../assets/board-css/purple.css";
 import "../assets/board-css/ic.css";
 import debug from "./debug";
+import { readFile, readFileSync } from "fs";
 
 export function draw_chessboard(app: App, settings: ChesserSettings) {
   return (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
@@ -122,7 +124,17 @@ export class Chesser extends MarkdownRenderChild {
         });
       });
     }
-
+    
+    if (config.pgn_file) {
+      let adapter = app.vault.adapter;
+        if (adapter instanceof FileSystemAdapter) {
+          let path = adapter.getBasePath() + "/" + config.pgn_file
+          debug(() => console.debug("loading from pgn file", path));
+          let pgn = readFileSync(path, 'utf-8')
+          this.chess.load_pgn(pgn) 
+          config.moves = this.chess.history({verbose: true})
+        }
+    }
     if (config.pgn) {
       debug(() => console.debug("loading from pgn", config.pgn));
       this.chess.load_pgn(config.pgn);

@@ -134,6 +134,24 @@ export default class ChesserMenu {
         navigator.clipboard.writeText(this.chesser.getFen());
       });
     });
+
+    btnContainer.createEl("a", "view-action", (btn: HTMLAnchorElement) => {
+      btn.ariaLabel = "Copy PGN";
+      setIcon(btn, "note-glyph");
+      btn.addEventListener("click", (e: MouseEvent) => {
+        e.preventDefault();
+        navigator.clipboard.writeText(this.chesser.history().map( m => m.san).join(" "));
+      });
+    });
+    
+    btnContainer.createEl("a", "view-action", (btn: HTMLAnchorElement) => {
+      btn.ariaLabel = "Save game";
+      setIcon(btn, "save");
+      btn.addEventListener("click", (e: MouseEvent) => {
+        e.preventDefault();
+        this.chesser.write_config({pgn: this.chesser.history().map( m => m.san).join(" ")})
+      });
+    });
   }
 
   redrawMoveList() {

@@ -125,6 +125,8 @@ export class Chesser extends MarkdownRenderChild {
         });
       });
     }
+    
+    this.cg = Chessground(containerEl.createDiv())
 
     if (config.pgn) {
       debug(() => console.debug("loading from pgn", config.pgn));
@@ -159,7 +161,7 @@ export class Chesser extends MarkdownRenderChild {
     // Setup UI
     this.set_style(containerEl, config.pieceStyle, config.boardStyle);
     try {
-      this.cg = Chessground(containerEl.createDiv(), {
+      this.cg.set({
         fen: this.chess.fen(),
         addDimensionsCssVars: true,
         lastMove,

@@ -29,12 +29,14 @@ Here are the available settings for a `chesr` code block:
 | `drawable`    | `true`/`false`                                               | Controls the ability to draw annotations (arrows, circles) on the board. |
 | `viewOnly`    | `true`/`false`                                               | If enabled, displays a static chess board (no moves, annotations, ...). |
 | `free`        | `true`/`false`                                               | If enabled, disables the chess logic, all moves are valid.   |
+| `pgn_file`    | The path to a valid .pgn file                                | Loads the game state from the PGN                            |
+| `pgn`         | A string of moves separated by spaces (e.g., `e4 e5 Nf3`)    | Loads the game state from the specified moves                            |
 
 You can permanently set some settings in [Chesser](https://github.com/SilentVoid13/Chesser)'s obsidian plugin settings.
 
 ## TODO
 
-- [ ] Add [PGN](https://en.wikipedia.org/wiki/Portable_Game_Notation) format support
+- [x] Add [PGN](https://en.wikipedia.org/wiki/Portable_Game_Notation) format support
 
 ## Installation
 

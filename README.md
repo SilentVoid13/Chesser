@@ -29,6 +29,7 @@ Here are the available settings for a `chesr` code block:
 | `drawable`    | `true`/`false`                                               | Controls the ability to draw annotations (arrows, circles) on the board. |
 | `viewOnly`    | `true`/`false`                                               | If enabled, displays a static chess board (no moves, annotations, ...). |
 | `free`        | `true`/`false`                                               | If enabled, disables the chess logic, all moves are valid.   |
+| `startingPosition`| The name of a starting position (e.g., `Queen's Gambit`) or ECO string (e.g., `D06`)  | Starts the chess board with a particular opening |
 
 You can permanently set some settings in [Chesser](https://github.com/SilentVoid13/Chesser)'s obsidian plugin settings.
 

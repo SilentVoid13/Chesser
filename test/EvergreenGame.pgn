@@ -1,0 +1,105 @@
+[Event "Berlin"]
+[Site "Berlin GER"]
+[Date "1852.??.??"]
+[Round "?"]
+[White "?"]
+[Black "?"]
+[Result "1-0"]
+[ECO "C52"]
+[PlyCount "47"]
+
+1. e4 {The most popular, active, and \"romantic\" first move.} 1... e5 {Just as
+good as White's first move.} 2. Nf3 {Developing \"with tempo\" and attacking
+e5.} 2... Nc6 {Developing and defending e5.} 3. Bc4 {Developing the bishop to a
+central diagonal and attacking f7 - the weakest square, defended only by the
+king.} 3... Bc5 {Also developing the bishop to a great diagonal.} 4. b4 $5
+{[%c_effect b4;square;b4;type;Interesting;persistent;true] The \"Evan's Gambit\"
+- all the rage in 1852 $1 This move sacrifices a pawn to expand in the center (c3
++ d4) with a gain of time and to gain active lines and diagonals for the white
+pieces.} 4... Bxb4 {[%c_highlight
+d8;keyPressed;none;opacity;0.8;square;d8;persistent;false] When facing a gambit,
+you should usually accept it. Otherwise you are forced back without gaining
+material.} 5. c3 {Threatening the b4-bishop and intending d4.} 5... Ba5
+{Retreating and staying pointed at the king on e1.} 6. d4 {Building (at least
+temporarily) the perfect pawn center: e4 and d4.} 6... exd4 {Eliminating White's
+perfect pawn center.} (6... d6 {Keeping the strong point on e5 is considered
+more solid today.}) 7. O-O {Castling and also unpinning the c-pawn so as to
+capture on d4 next move.} 7... d3 $2 {[%c_effect
+d3;square;d3;type;Mistake;persistent;true] This gives back the pawn to prevent
+White from capturing on d4, but it has the same downside as 7...dxc3. It loses
+time that could be used to develop and castle.} (7... dxc3 $6 {[%c_effect
+c3;square;c3;type;Inaccuracy;persistent;true] This was played in the famous game
+Fischer vs. Fine. Capturing more pawns without developing is too \"greedy.\"} 8.
+Qb3 Qe7 9. Nxc3 Nf6 10. Nd5 Nxd5 11. exd5 {The e-file is now open to Black's
+king. That allowed Fischer to win swiftly.}) 8. Qb3 {Developing the queen and
+attacking f7.} 8... Qf6 {Developing the queen and defending f7 :D} 9. e5
+{Expanding in the middle and gaining time by threatening the black queen.} 9...
+Qg6 {Retreating the queen and defending d3.} (9... Nxe5 $2 {[%c_effect
+e5;square;e5;type;Mistake;persistent;true]} 10. Re1 d6 11. Qb5+ {attacks the
+king and the bishop on a5, winning the bishop.}) 10. Re1 $6 {[%c_effect
+e1;square;e1;type;Inaccuracy;persistent;true] The rook is developed, but the
+e-file is blocked by a pawn. Rd1 makes more sense.} 10... Nge7 {Developing and
+getting ready to castle $1} 11. Ba3 {The bishop is placed on a nice diagonal,
+attacking e7.} 11... b5 $2 {[%c_effect b5;square;b5;type;Mistake;persistent;true]
+Black sacrifices a pawn to open the b-file for his rook and b7 for his bishop,
+but this makes little sense. Neither should become active enough to justify
+this.} (11... O-O {Black is fine after this.}) 12. Qxb5 {Capturing the free
+pawn.} 12... Rb8 {Attacking the queen and seizing the open (but not very
+valuable) b-file.} 13. Qa4 {Stepping back and keeping a5 under attack.} 13...
+Bb6 {Saving the bishop and responding to the threat of capture on e7 when the
+knight on c6 cannot capture back AND defend a5.} (13... O-O $4 {[%c_effect
+g8;square;g8;type;Blunder;persistent;true] The knight on c6 is overworked so
+White can win a piece.} 14. Bxe7 Nxe7 15. Qxa5 $18) 14. Nbd2 {Developing the
+final minor piece.} 14... Bb7 $2 {[%c_effect
+b7;square;b7;type;Mistake;persistent;true] The bishop is placed on a GREAT
+diagonal. However, castling is much more important.} (14... O-O {This is the
+last good chance.}) 15. Ne4 $1 {[%c_effect
+e4;square;e4;type;GreatFind;persistent;true] The knight advances to a great
+square and blocks the black queen so as to play Bxd3 next turn.} 15... Qf5 $4
+{[%c_effect f5;square;f5;type;Blunder;persistent;true] This move is totally
+pointless. Why is the queen better on f5 than g6 $2 Black should now be crushed.}
+(15... O-O 16. Bxd3 {Threatens Nf6+ that would win the black queen.}) 16. Bxd3
+{Grabbing the pawn and pointing at the black queen with a threat of Nf6+ $1} 16...
+Qh5 {The queen must now retreat from the threat of discovered checks that wins
+the lady.} (16... O-O $2 {[%c_effect g8;square;g8;type;Mistake;persistent;true]
+too late :(} 17. Nf6+ gxf6 18. Bxf5 {wins the queen.}) 17. Nf6+ $6 {[%c_effect
+f6;square;f6;type;Inaccuracy;persistent;true] This is a bit too eager, BUT the
+idea to sacrifice a piece to open the e-file makes great sense. The problem is
+that White allows the g-file pointing to his king to be opened, and there isn't
+a forced win for him.} (17. Ng3 {Chasing the queen will soon win the lady or
+craft a powerful attack.} 17... Qh6 18. Rad1 O-O 19. Bc1 Qe6 20. Ng5 {Attacks
+the h7-pawn and the queen and wins comfortably.}) 17... gxf6 {The queen is also
+under attack so declining the knight is not possible.} 18. exf6 {Recapturing.}
+18... Rg8 $1 {[%c_effect g8;square;g8;type;GreatFind;persistent;true] Grabbing the
+open g-file. For the first time this game, White's king feels pressure too.} 19.
+Rad1 $3 {[%c_effect d1;square;d1;type;Brilliant;persistent;true] A brilliant move
+which anticipates the coming sacrifices on e7 and d7. I LOVE that White saw and
+took the chance to include his final piece in the attack. Leave no piece
+behind.} (19. fxe7 $4 {[%c_effect e7;square;e7;type;Blunder;persistent;true] This
+just makes the black king very safe behind the pawn.} 19... Qxf3 {The g-pawn is
+pinned.} 20. g3 Qxf2+ 21. Kh1 Qf3#) 19... Qxf3 $2 {[%c_effect
+f3;square;f3;type;Mistake;persistent;true]} (19... Qh3 $1 {[%c_effect
+h3;square;h3;type;GreatFind;persistent;true] This is a computer-perfect
+defense.} 20. Bf1 {Defending mate on g2.} (20. g3 Rxg3+ $1 {[%c_effect
+g3;square;g3;type;GreatFind;persistent;true]} 21. hxg3 Qxg3+ 22. Kh1 Qxf3+ 23.
+Kh2 Bxf2 $19) 20... Qf5 $1 {[%c_effect f5;square;f5;type;GreatFind;persistent;true]
+This move (not capturing the knight on f3 because of Rxe7+ $1) intends to capture
+on f6 and saves the game for Black. Incredible.}) 20. Rxe7+ $1 {[%c_effect
+e7;square;e7;type;GreatFind;persistent;true] Brilliant $1 Anderssen has seen the
+coming checkmate.} 20... Nxe7 {Capturing the rook and *probably* not seeing the
+next move.} (20... Kd8 21. Rxd7+ $1 {[%c_effect
+d7;square;d7;type;GreatFind;persistent;true] Exposing the black king fully.}
+21... Kc8 22. Rd8+ $3 {[%c_effect d8;square;d8;type;Brilliant;persistent;true]}
+22... Kxd8 (22... Rxd8 23. gxf3 $18) 23. Bf5+ Qxd1+ 24. Qxd1+ $18) 21. Qxd7+ $3
+{[%c_effect d7;square;d7;type;Brilliant;persistent;true] Another brilliant move $1
+White's queen sacrifice drags Black's king into a double check that forces
+checkmate.} 21... Kxd7 {Asking to be shown the checkmate.} (21... Kf8 22. Bxe7#)
+22. Bf5+ $1 {[%c_effect f5;square;f5;type;GreatFind;persistent;true] The correct
+double check.} (22. Bb5+ $4 {[%c_effect
+b5;square;b5;type;Blunder;persistent;true] This lets black's king get away.}
+22... Ke6 23. Bd7+ Kxf6 $19) 22... Ke8 {Trying to hide in the center.} (22... Kc6
+23. Bd7# {This is my favorite checkmate in the game.}) 23. Bd7+ {Pushing the
+king to a fatal square.} 23... Kf8 {Running to d8 is the same.} (23... Kd8 24.
+Bxe7# (24. fxe7#)) 24. Bxe7# {A beautiful finish to a fantastic game. This game
+is well-named and is sure to always seem fresh and inspiring to chess
+audiences.} 1-0

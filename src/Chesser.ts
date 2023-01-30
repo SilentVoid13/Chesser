@@ -59,6 +59,9 @@ import "../assets/board-css/green.css";
 import "../assets/board-css/purple.css";
 import "../assets/board-css/ic.css";
 import debug from "./debug";
+import startingPositions from "./startingPositions"
+import { readFileSync } from "fs";
+import { start } from "repl";
 
 export function draw_chessboard(app: App, settings: ChesserSettings) {
   return (source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) => {
@@ -122,11 +125,26 @@ export class Chesser extends MarkdownRenderChild {
         });
       });
     }
+    
+    this.cg = Chessground(containerEl.createDiv())
 
     if (config.pgn) {
       debug(() => console.debug("loading from pgn", config.pgn));
       this.chess.load_pgn(config.pgn);
-    } else if (config.fen) {
+    } else if (config.startingPosition) { 
+      debug(() => console.debug("loading from starting position ", config.startingPosition));
+      let positions = startingPositions.flatMap((cat) => cat.items)
+      const startingPosition = positions.find((item) => item.name === config.startingPosition) ?? 
+                               positions.find((item) => item.eco === config.startingPosition);
+      if (startingPosition) {
+        this.loadFen(startingPosition.fen, startingPosition.moves)
+      }
+      else {
+        new Notice("Chesser: Unable to find starting position " + config.startingPosition)
+      }
+      
+    }
+    else if (config.fen) {
       debug(() => console.debug("loading from fen", config.fen));
       this.chess.load(config.fen);
     }
@@ -143,7 +161,7 @@ export class Chesser extends MarkdownRenderChild {
     // Setup UI
     this.set_style(containerEl, config.pieceStyle, config.boardStyle);
     try {
-      this.cg = Chessground(containerEl.createDiv(), {
+      this.cg.set({
         fen: this.chess.fen(),
         addDimensionsCssVars: true,
         lastMove,

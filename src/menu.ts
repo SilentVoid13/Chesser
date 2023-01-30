@@ -1,6 +1,6 @@
 import { setIcon, Setting } from "obsidian";
 import { Chesser } from "./Chesser";
-import startingPositons from "./startingPositions";
+import startingPositions from "./startingPositions";
 
 export default class ChesserMenu {
   private chesser: Chesser;
@@ -29,7 +29,7 @@ export default class ChesserMenu {
             });
             el.createEl("optgroup", {}, (optgroup) => {
               optgroup.label = "Popular Openings";
-              startingPositons.forEach((category) => {
+              startingPositions.forEach((category) => {
                 category.items.forEach((item) => {
                   optgroup.createEl("option", {
                     value: item.eco,
@@ -58,7 +58,7 @@ export default class ChesserMenu {
             return;
           }
 
-          const startingPosition = startingPositons
+          const startingPosition = startingPositions
             .flatMap((cat) => cat.items)
             .find((item) => item.eco === value);
 
@@ -83,7 +83,7 @@ export default class ChesserMenu {
   }
 
   getStartingPositionFromFen(fen: string) {
-    return startingPositons.flatMap((cat) => cat.items).find((item) => item.eco === fen);
+    return startingPositions.flatMap((cat) => cat.items).find((item) => item.eco === fen);
   }
 
   createToolbar() {

@@ -19,6 +19,7 @@ import { ChesserConfig, parse_user_config } from "./ChesserConfig";
 import { ChesserSettings } from "./ChesserSettings";
 import ChesserMenu from "./menu";
 
+import { readFileSync } from "fs";
 // To bundle all css files in styles.css with rollup
 import "../assets/custom.css";
 import "chessground/assets/chessground.base.css";
@@ -125,7 +126,11 @@ export class Chesser extends MarkdownRenderChild {
 
     if (config.pgn) {
       debug(() => console.debug("loading from pgn", config.pgn));
-      this.chess.load_pgn(config.pgn);
+      if (config.pgn.split('.').pop().toLowerCase() == 'pgn'){
+        this.chess.load_pgn(this.loadPgnFromFile(config.pgn))
+      }else{
+        this.chess.load_pgn(config.pgn);
+      }
     } else if (config.fen) {
       debug(() => console.debug("loading from fen", config.fen));
       this.chess.load(config.fen);
@@ -399,5 +404,16 @@ export class Chesser extends MarkdownRenderChild {
 
     this.cg.set({ fen: this.chess.fen(), lastMove });
     this.sync_board_with_gamestate();
+  }
+
+  public loadPgnFromFile(filepath: string): string {
+    try {
+      const root = this.app.vault.adapter.basePath + this.app.workspace.getActiveFile().parent.path
+      const pgn_data = readFileSync(root + filepath, 'utf8')
+      return pgn_data
+    } catch (err){
+      debug( () => console.debug("failed to load PGN from file", filepath))
+      return ""
+    } 
   }
 }

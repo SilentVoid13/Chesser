@@ -23,7 +23,7 @@ Here are the available settings for a `chesr` code block:
 | Name          | Possible Values                                              | Description                                                  |
 | ------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | `fen`         | A valid FEN string                                           | Starts the chess board with a particular position.           |
-| `pgn`         | A valid PGN string formatted for YAML                        | Loads the chess board with the moves from a PGN game         |
+| `pgn`         | Either, a valid PGN string formatted for YAML <br /> or the filepath to a `.pgn` file in the same folder             | Loads the chess board with the moves from a PGN game         |
 | `orientation` | `white`/`black`                                              | Orientation of the board.                                    |
 | `pieceStyle`  | A valid piece style name.<br />Check [this](https://github.com/SilentVoid13/Chesser/tree/master/assets/piece-css) to view available styles. | Style of the pieces on the board.                            |
 | `boardStyle`  | A valid board style name.<br />Check [this](https://github.com/SilentVoid13/Chesser/tree/master/assets/board-css) to view available styles. | Style of the chess board.                                    |
@@ -49,7 +49,7 @@ You can permanently set some settings in [Chesser](https://github.com/SilentVoid
 > ```
 ## TODO
 
-- [ ] Add [PGN](https://en.wikipedia.org/wiki/Portable_Game_Notation) file support
+- [ ] Test [PGN](https://en.wikipedia.org/wiki/Portable_Game_Notation) file support
 
 ## Installation
 

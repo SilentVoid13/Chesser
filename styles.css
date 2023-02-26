@@ -29,11 +29,6 @@
   margin: 8px 0;
 }
 
-/* temporary */
-.cg-wrap coords {
-  opacity: 0 !important;
-}
-
 .chess-move-list {
   display: flex;
   flex-wrap: wrap;

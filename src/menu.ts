@@ -152,8 +152,7 @@ export default class ChesserMenu {
           }`,
           text: move.san,
         });
-        if(this.chesser.currentMoveIdx === idx)
-        {
+        if (this.chesser.currentMoveIdx === idx) {
           activeElement = moveEl;
         }
         moveEl.addEventListener("click", (ev) => {

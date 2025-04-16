@@ -70,7 +70,7 @@ export default class ChesserMenu {
           toggle.onChange((value) => {
             this.chesser.setFreeMove(value);
           });
-        });
+        }).settingEl.classList.add("chesser-hide-setting");
       });
     });
 
@@ -98,8 +98,8 @@ export default class ChesserMenu {
     });
 
     btnContainer.createEl("a", "view-action", (btn: HTMLAnchorElement) => {
-      btn.ariaLabel = "Reset";
-      setIcon(btn, "restore-file-glyph");
+      btn.ariaLabel = "Home";
+      setIcon(btn, "home");
       btn.addEventListener("click", (e: MouseEvent) => {
         e.preventDefault();
         while (this.chesser.currentMoveIdx >= 0) {
@@ -134,6 +134,14 @@ export default class ChesserMenu {
         navigator.clipboard.writeText(this.chesser.getFen());
       });
     });
+    btnContainer.createEl("a", "view-action", (btn) => {
+			btn.ariaLabel = "Init";
+			obsidian.setIcon(btn, "restore-file-glyph");
+			btn.addEventListener("click", async (e) => {
+			    e.preventDefault();
+				await this.chesser.loadInitialPosition();
+			});
+		});
   }
 
   redrawMoveList() {

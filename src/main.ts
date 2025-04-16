@@ -16,6 +16,14 @@ export default class ChesserPlugin extends Plugin {
       "chess",
       draw_chessboard(this.app, this.settings)
     );
+    
+    // Replaces `localStorage` with persistent storage in the vault (`.ChesserStorage/`)
+    const hiddenFolder = '.ChesserStorage';
+    const folderExists = await this.app.vault.adapter.exists(hiddenFolder);
+    if (!folderExists) {
+      await this.app.vault.adapter.mkdir(hiddenFolder);
+      console.log(`Hidden folder created : ${hiddenFolder}`);
+    }
   }
 
   async loadSettings() {

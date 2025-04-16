@@ -67,18 +67,45 @@ export function draw_chessboard(app: App, settings: ChesserSettings) {
   };
 }
 
-function read_state(id: string) {
-  const savedDataStr = localStorage.getItem(`chesser-${id}`);
+// PATCH : Replaces `localStorage` with persistent storage in the vault
+async function write_state(id, state) {
+  const fileName = `.ChesserStorage/${id}.json`;
+  const content = JSON.stringify(state, null, 2);
+
+  const adapter = app.vault.adapter;
+
   try {
-    return JSON.parse(savedDataStr);
-  } catch (e) {
-    console.error(e);
+    const exists = await adapter.exists(fileName);
+    if (exists) {
+      await adapter.write(fileName, content);
+    } else {
+      // Check that the folder exists
+      const folderPath = `.ChesserStorage`;
+      const folderExists = await adapter.exists(folderPath);
+      if (!folderExists) {
+        await adapter.mkdir(folderPath);
+      }
+      await adapter.write(fileName, content);
+    }
+  } catch (err) {
+    console.error("Error writing file .json :", err);
   }
-  return {};
 }
 
-function write_state(id: string, game_state: ChesserConfig) {
-  localStorage.setItem(`chesser-${id}`, JSON.stringify(game_state));
+async function read_state(id) {
+  const fileName = `.ChesserStorage/${id}.json`;
+  const adapter = app.vault.adapter;
+
+  try {
+    const exists = await adapter.exists(fileName);
+    if (!exists) return null;
+
+    const content = await adapter.read(fileName);
+    return JSON.parse(content);
+  } catch (err) {
+    console.error("Error reading or parsing JSON :", err);
+    return null;
+  }
 }
 
 export class Chesser extends MarkdownRenderChild {

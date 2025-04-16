@@ -1,6 +1,22 @@
 .cg-wrap {
-  width: 400px;
-  height: 400px;
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  position: relative;
+}
+
+.cg-wrap::before {
+  content: "";
+  display: block;
+  padding-bottom: 100%; /* Perfect square */
+}
+
+.cg-wrap > * {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .chesser-container {
@@ -18,10 +34,18 @@
   width: calc(100% - 424px);
 }
 
+.chesser-hide-setting {
+  display: none;
+}
+
 .chess-toolbar-container {
   border-top: 1px solid var(--background-modifier-border);
   margin-top: auto;
   padding-top: 8px;
+}
+
+.chess-toolbar-container .view-action {
+  margin-right: 0.6em; /* espace entre boutons */
 }
 
 .chess-turn-text {
@@ -68,4 +92,32 @@
   margin-top: 8px;
   margin-bottom: 12px;
   width: 100%;
+}
+
+/* On small screens (iPhone portrait) */
+@media (max-width: 768px) {
+	.chesser-container {
+		display: flex;
+		flex-direction: column;
+		height: auto;
+	}
+
+	.chess-menu-container {
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+		margin-left: 0;
+		margin-top: 16px;
+		box-sizing: border-box;
+	}
+
+	.chess-toolbar-container {
+		order: -1; /* Move the toolbar to the top of the menu */
+		margin-bottom: 0.5em; /* space under the buttons */
+	}
+  
+	.chess-toolbar-container .view-action {
+		margin-right: 12px;
+		padding-inline: 6px;
+	}
 }

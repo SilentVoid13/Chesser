@@ -136,6 +136,7 @@ export class Chesser extends MarkdownRenderChild {
 
     const saved_config = read_state(this.id);
     const config = Object.assign({}, user_config, saved_config);
+    this.user_config = user_config;  // required for the function loadInitialPosition()
 
     this.sync_board_with_gamestate = this.sync_board_with_gamestate.bind(this);
     this.save_move = this.save_move.bind(this);
@@ -150,13 +151,35 @@ export class Chesser extends MarkdownRenderChild {
       });
     }
 
-    if (config.pgn) {
-      debug(() => console.debug("loading from pgn", config.pgn));
-      this.chess.load_pgn(config.pgn);
-    } else if (config.fen) {
-      debug(() => console.debug("loading from fen", config.fen));
-      this.chess.load(config.fen);
-    }
+    /* Allows user to define a PGN directly in the code block */
+		if (config.pgn?.trim()) {
+			try {
+				const rawPgn = config.pgn.trim();
+				const normalizedPgn = rawPgn.replace(/(\d+)\s*\./g, '$1.');
+
+				if (!this.chess.load_pgn(normalizedPgn)) {
+					throw new Error("Invalid or incompatible PGN.");
+				}
+
+				const moves = normalizedPgn.replace(/\d+\./g, '').trim().split(/\s+/);
+				const movePairs = [];
+				for (let i = 0; i < moves.length; i += 2) {
+					movePairs.push(moves[i + 1] ? `${moves[i]} ${moves[i + 1]}` : moves[i]);
+				}
+
+				this.startingPosition = new StartingPosition(
+					"Xxx", "Custom", this.chess.fen(), "Custom", movePairs
+				);
+
+			} catch (e) {
+				console.error("PGN loading error:", e);
+			}
+		}
+		
+		if (config.fen) {
+            debug(() => console.debug("loading from fen", config.fen));
+            this.chess.load(config.fen);
+        }
 
     this.moves = config.moves ?? this.chess.history({ verbose: true });
     this.currentMoveIdx = config.currentMoveIdx ?? this.moves.length - 1;
@@ -427,4 +450,32 @@ export class Chesser extends MarkdownRenderChild {
     this.cg.set({ fen: this.chess.fen(), lastMove });
     this.sync_board_with_gamestate();
   }
+  
+	/* Adds an "Init" button to reset the board to the PGN/FEN-defined starting position */
+	async loadInitialPosition() {
+		console.log("Init via user_config");
+
+		if (this.user_config?.pgn && this.user_config.pgn.trim() !== "") {
+			console.log("PGN to load :", this.user_config.pgn);
+			const loaded = this.chess.load_pgn(this.user_config.pgn);
+
+			if (!loaded) {
+				console.warn("Invalid PGN !");
+				new Notice("Invalid PGN !");
+				return;
+			}
+
+			this.moves = this.chess.history({ verbose: true });
+			this.currentMoveIdx = -1;
+
+			console.log("Replay moves via update_turn_idx()");
+			this.update_turn_idx(this.moves.length - 1); // ← that's what updates the visual
+		} else {
+			console.log("No PGN defined → complete reset");
+			this.chess.reset();
+			this.moves = [];
+			this.currentMoveIdx = -1;
+			this.sync_board_with_gamestate();
+		}
+	}
 }

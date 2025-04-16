@@ -135,13 +135,13 @@ export default class ChesserMenu {
       });
     });
     btnContainer.createEl("a", "view-action", (btn) => {
-			btn.ariaLabel = "Init";
-			obsidian.setIcon(btn, "restore-file-glyph");
-			btn.addEventListener("click", async (e) => {
-			    e.preventDefault();
-				await this.chesser.loadInitialPosition();
-			});
-		});
+      btn.ariaLabel = "Init";
+      setIcon(btn, "restore-file-glyph");
+      btn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        await this.chesser.loadInitialPosition();
+      });
+    });
   }
 
   redrawMoveList() {

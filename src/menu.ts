@@ -127,7 +127,7 @@ export default class ChesserMenu {
         obsidian.setIcon(btn, "scroll-text");
         btn.addEventListener("click", (e) => {
           e.preventDefault();
-          const pgn = this.chesser.chess?.pgn?.();
+          const pgn = this.chesser.getChess()?.pgn?.();
           const fallback = '1...';
           const content = (pgn && pgn.trim() !== '') ? pgn : fallback;
     

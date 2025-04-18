@@ -87,61 +87,73 @@ export default class ChesserMenu {
   }
 
   createToolbar() {
-    const btnContainer = this.containerEl.createDiv("chess-toolbar-container");
-    btnContainer.createEl("a", "view-action", (btn: HTMLAnchorElement) => {
-      btn.ariaLabel = "Flip board";
-      setIcon(btn, "switch");
-      btn.addEventListener("click", (e: MouseEvent) => {
-        e.preventDefault();
-        this.chesser.flipBoard();
+      const btnContainer = this.containerEl.createDiv("chess-toolbar-container");
+      btnContainer.createEl("a", "view-action", (btn) => {
+          btn.ariaLabel = "Flip board";
+          obsidian.setIcon(btn, "switch");
+          btn.addEventListener("click", (e) => {
+              e.preventDefault();
+              this.chesser.flipBoard();
+          });
       });
-    });
+      btnContainer.createEl("a", "view-action", (btn) => {
+          btn.ariaLabel = "Home";
+          obsidian.setIcon(btn, "house");
+          btn.addEventListener("click", (e) => {
+              e.preventDefault();
+              while (this.chesser.currentMoveIdx >= 0) {
+                  this.chesser.undo_move();
+              }
+          });
+      });
+  btnContainer.createEl("a", "view-action", (btn) => {
+          btn.ariaLabel = "Init";
+          obsidian.setIcon(btn, "rotate-ccw");
+          btn.addEventListener("click", (e) => __awaiter(this, void 0, void 0, function* () {
+              e.preventDefault();
+              yield this.chesser.loadInitialPosition();
+          }));
+      });
+  btnContainer.createEl("a", "view-action", (btn) => {
+          btn.ariaLabel = "Copy FEN";
+          obsidian.setIcon(btn, "two-blank-pages");
+          btn.addEventListener("click", (e) => {
+              e.preventDefault();
+              navigator.clipboard.writeText(this.chesser.getFen());
+          });
+      });
+  btnContainer.createEl("a", "view-action", (btn) => {
+    btn.ariaLabel = "Copy PGN";
+    obsidian.setIcon(btn, "scroll-text");
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      const pgn = this.chesser.chess?.pgn?.();
+      const fallback = '1...';
+      const content = (pgn && pgn.trim() !== '') ? pgn : fallback;
 
-    btnContainer.createEl("a", "view-action", (btn: HTMLAnchorElement) => {
-      btn.ariaLabel = "Home";
-      setIcon(btn, "home");
-      btn.addEventListener("click", (e: MouseEvent) => {
-        e.preventDefault();
-        while (this.chesser.currentMoveIdx >= 0) {
-          this.chesser.undo_move();
-        }
+      navigator.clipboard.writeText(content).then(() => {
+        new obsidian.Notice("PGN copié !");
+      }).catch(() => {
+        new obsidian.Notice("Erreur lors de la copie du PGN");
       });
     });
-
-    btnContainer.createEl("a", "view-action", (btn: HTMLAnchorElement) => {
-      btn.ariaLabel = "Undo";
-      setIcon(btn, "left-arrow");
-      btn.addEventListener("click", (e: MouseEvent) => {
-        e.preventDefault();
-        this.chesser.undo_move();
+  });
+      btnContainer.createEl("a", "view-action", (btn) => {
+          btn.ariaLabel = "Undo";
+          obsidian.setIcon(btn, "left-arrow");
+          btn.addEventListener("click", (e) => {
+              e.preventDefault();
+              this.chesser.undo_move();
+          });
       });
-    });
-
-    btnContainer.createEl("a", "view-action", (btn: HTMLAnchorElement) => {
-      btn.ariaLabel = "Redo";
-      setIcon(btn, "right-arrow");
-      btn.addEventListener("click", (e: MouseEvent) => {
-        e.preventDefault();
-        this.chesser.redo_move();
+      btnContainer.createEl("a", "view-action", (btn) => {
+          btn.ariaLabel = "Redo";
+          obsidian.setIcon(btn, "right-arrow");
+          btn.addEventListener("click", (e) => {
+              e.preventDefault();
+              this.chesser.redo_move();
+          });
       });
-    });
-
-    btnContainer.createEl("a", "view-action", (btn: HTMLAnchorElement) => {
-      btn.ariaLabel = "Copy FEN";
-      setIcon(btn, "two-blank-pages");
-      btn.addEventListener("click", (e: MouseEvent) => {
-        e.preventDefault();
-        navigator.clipboard.writeText(this.chesser.getFen());
-      });
-    });
-    btnContainer.createEl("a", "view-action", (btn) => {
-      btn.ariaLabel = "Init";
-      setIcon(btn, "restore-file-glyph");
-      btn.addEventListener("click", async (e) => {
-        e.preventDefault();
-        await this.chesser.loadInitialPosition();
-      });
-    });
   }
 
   redrawMoveList() {

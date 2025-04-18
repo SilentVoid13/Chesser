@@ -30,6 +30,11 @@ pgn: 1. e4 e6 2. d4 d5 3. Nc3 Bb4
 ### Reset Button Icon
 - Updated the reset icon to `"home"` for clarity
 
+### "Copy PGN" Button
+- Added `Copy PGN` button in the chessboard toolbar.
+- Allows users to copy the current game in PGN format to the clipboard.
+- Returns `'1...'` if no moves have been played.
+
 ### Hide Free Move Option
 - The "Enable Free Move?" toggle is hidden via CSS
 - The functionality is still available internally
@@ -100,7 +105,7 @@ This will generate the compiled plugin files:
 - `manifest.json`
 - `styles.css`
 
-You should now see those files at the root of the project.
+   You should now see these files in the project's `dist/` folder.
 
 ---
 

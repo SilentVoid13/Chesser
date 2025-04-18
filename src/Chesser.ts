@@ -120,6 +120,9 @@ export class Chesser extends MarkdownRenderChild {
   private moves: Move[];
 
   public currentMoveIdx: number;
+  public getChess(): ChessInstance {
+    return this.chess;
+  }
 
   constructor(
     containerEl: HTMLElement,

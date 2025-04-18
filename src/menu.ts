@@ -106,7 +106,7 @@ export default class ChesserMenu {
               }
           });
       });
-  btnContainer.createEl("a", "view-action", (btn) => {
+      btnContainer.createEl("a", "view-action", (btn) => {
           btn.ariaLabel = "Init";
           obsidian.setIcon(btn, "rotate-ccw");
           btn.addEventListener("click", (e) => __awaiter(this, void 0, void 0, function* () {
@@ -114,7 +114,7 @@ export default class ChesserMenu {
               yield this.chesser.loadInitialPosition();
           }));
       });
-  btnContainer.createEl("a", "view-action", (btn) => {
+      btnContainer.createEl("a", "view-action", (btn) => {
           btn.ariaLabel = "Copy FEN";
           obsidian.setIcon(btn, "two-blank-pages");
           btn.addEventListener("click", (e) => {
@@ -122,22 +122,22 @@ export default class ChesserMenu {
               navigator.clipboard.writeText(this.chesser.getFen());
           });
       });
-  btnContainer.createEl("a", "view-action", (btn) => {
-    btn.ariaLabel = "Copy PGN";
-    obsidian.setIcon(btn, "scroll-text");
-    btn.addEventListener("click", (e) => {
-      e.preventDefault();
-      const pgn = this.chesser.chess?.pgn?.();
-      const fallback = '1...';
-      const content = (pgn && pgn.trim() !== '') ? pgn : fallback;
-
-      navigator.clipboard.writeText(content).then(() => {
-        new obsidian.Notice("PGN copié !");
-      }).catch(() => {
-        new obsidian.Notice("Erreur lors de la copie du PGN");
+      btnContainer.createEl("a", "view-action", (btn) => {
+        btn.ariaLabel = "Copy PGN";
+        obsidian.setIcon(btn, "scroll-text");
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          const pgn = this.chesser.chess?.pgn?.();
+          const fallback = '1...';
+          const content = (pgn && pgn.trim() !== '') ? pgn : fallback;
+    
+          navigator.clipboard.writeText(content).then(() => {
+            new obsidian.Notice("PGN copié !");
+          }).catch(() => {
+            new obsidian.Notice("Erreur lors de la copie du PGN");
+          });
+        });
       });
-    });
-  });
       btnContainer.createEl("a", "view-action", (btn) => {
           btn.ariaLabel = "Undo";
           obsidian.setIcon(btn, "left-arrow");

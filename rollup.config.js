@@ -6,7 +6,7 @@ import css from "rollup-plugin-css-only";
 export default {
   input: 'src/main.ts',
   output: {
-    dir: '.',
+    dir: 'dist',
     sourcemap: 'inline',
     format: 'cjs',
     exports: 'default'

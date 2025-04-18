@@ -1,4 +1,4 @@
-import { setIcon, Setting } from "obsidian";
+import { Notice, setIcon, Setting } from "obsidian";
 import { Chesser } from "./Chesser";
 import startingPositons from "./startingPositions";
 
@@ -90,7 +90,7 @@ export default class ChesserMenu {
       const btnContainer = this.containerEl.createDiv("chess-toolbar-container");
       btnContainer.createEl("a", "view-action", (btn) => {
           btn.ariaLabel = "Flip board";
-          obsidian.setIcon(btn, "switch");
+          setIcon(btn, "switch");
           btn.addEventListener("click", (e) => {
               e.preventDefault();
               this.chesser.flipBoard();
@@ -98,7 +98,7 @@ export default class ChesserMenu {
       });
       btnContainer.createEl("a", "view-action", (btn) => {
           btn.ariaLabel = "Home";
-          obsidian.setIcon(btn, "house");
+          setIcon(btn, "house");
           btn.addEventListener("click", (e) => {
               e.preventDefault();
               while (this.chesser.currentMoveIdx >= 0) {
@@ -107,40 +107,43 @@ export default class ChesserMenu {
           });
       });
       btnContainer.createEl("a", "view-action", (btn) => {
-          btn.ariaLabel = "Init";
-          obsidian.setIcon(btn, "rotate-ccw");
-          btn.addEventListener("click", (e) => __awaiter(this, void 0, void 0, function* () {
-              e.preventDefault();
-              yield this.chesser.loadInitialPosition();
-          }));
+        btn.ariaLabel = "Init";
+        setIcon(btn, "rotate-ccw");
+        btn.addEventListener("click", async (e) => {
+            e.preventDefault();
+            await this.chesser.loadInitialPosition();
+        });
       });
       btnContainer.createEl("a", "view-action", (btn) => {
           btn.ariaLabel = "Copy FEN";
-          obsidian.setIcon(btn, "two-blank-pages");
-          btn.addEventListener("click", (e) => {
-              e.preventDefault();
-              navigator.clipboard.writeText(this.chesser.getFen());
+          setIcon(btn, "two-blank-pages");
+          btn.addEventListener("click", async (e) => {
+            e.preventDefault();
+            try {
+              await navigator.clipboard.writeText(this.chesser.getFen());
+              new Notice("FEN copié !");
+            } catch {
+              new Notice("Erreur lors de la copie du FEN");
+            }
           });
       });
       btnContainer.createEl("a", "view-action", (btn) => {
         btn.ariaLabel = "Copy PGN";
-        obsidian.setIcon(btn, "scroll-text");
-        btn.addEventListener("click", (e) => {
+        setIcon(btn, "scroll-text");
+        btn.addEventListener("click", async (e) => {
           e.preventDefault();
-          const pgn = this.chesser.getChess()?.pgn?.();
-          const fallback = '1...';
-          const content = (pgn && pgn.trim() !== '') ? pgn : fallback;
-    
-          navigator.clipboard.writeText(content).then(() => {
-            new obsidian.Notice("PGN copié !");
-          }).catch(() => {
-            new obsidian.Notice("Erreur lors de la copie du PGN");
-          });
+          const content = this.chesser.getPgn();
+          try {
+            await navigator.clipboard.writeText(content);
+            new Notice("PGN copié !");
+          } catch {
+            new Notice("Erreur lors de la copie du PGN");
+          }
         });
       });
       btnContainer.createEl("a", "view-action", (btn) => {
           btn.ariaLabel = "Undo";
-          obsidian.setIcon(btn, "left-arrow");
+          setIcon(btn, "left-arrow");
           btn.addEventListener("click", (e) => {
               e.preventDefault();
               this.chesser.undo_move();
@@ -148,7 +151,7 @@ export default class ChesserMenu {
       });
       btnContainer.createEl("a", "view-action", (btn) => {
           btn.ariaLabel = "Redo";
-          obsidian.setIcon(btn, "right-arrow");
+          setIcon(btn, "right-arrow");
           btn.addEventListener("click", (e) => {
               e.preventDefault();
               this.chesser.redo_move();

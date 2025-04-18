@@ -18,6 +18,7 @@ import { DrawShape } from "chessground/draw";
 import { ChesserConfig, parse_user_config } from "./ChesserConfig";
 import { ChesserSettings } from "./ChesserSettings";
 import ChesserMenu from "./menu";
+import { StartingPosition } from './startingPositions';
 
 // To bundle all css files in styles.css with rollup
 import "../assets/custom.css";
@@ -68,7 +69,8 @@ export function draw_chessboard(app: App, settings: ChesserSettings) {
 }
 
 // PATCH : Replaces `localStorage` with persistent storage in the vault
-async function write_state(id, state) {
+declare const app: App;
+async function write_state(id: string, state: any) {
   const fileName = `.ChesserStorage/${id}.json`;
   const content = JSON.stringify(state, null, 2);
 
@@ -92,7 +94,7 @@ async function write_state(id, state) {
   }
 }
 
-async function read_state(id) {
+async function read_state(id: string) {
   const fileName = `.ChesserStorage/${id}.json`;
   const adapter = app.vault.adapter;
 
@@ -119,10 +121,10 @@ export class Chesser extends MarkdownRenderChild {
   private menu: ChesserMenu;
   private moves: Move[];
 
+  private user_config: any;
+  private startingPosition: StartingPosition;
+
   public currentMoveIdx: number;
-  public getChess(): ChessInstance {
-    return this.chess;
-  }
 
   constructor(
     containerEl: HTMLElement,
@@ -178,7 +180,7 @@ export class Chesser extends MarkdownRenderChild {
 				console.error("PGN loading error:", e);
 			}
 		}
-		
+
 		if (config.fen) {
             debug(() => console.debug("loading from fen", config.fen));
             this.chess.load(config.fen);
@@ -427,6 +429,11 @@ export class Chesser extends MarkdownRenderChild {
     return this.chess.fen();
   }
 
+  public getPgn() {
+    const pgn = this.chess.pgn();
+    return pgn && pgn.trim() !== '' ? pgn : '1...';
+  }
+
   public loadFen(fen: string, moves?: string[]): void {
     let lastMove: [Key, Key] = undefined;
     if (moves) {
@@ -453,7 +460,7 @@ export class Chesser extends MarkdownRenderChild {
     this.cg.set({ fen: this.chess.fen(), lastMove });
     this.sync_board_with_gamestate();
   }
-  
+
 	/* Adds an "Init" button to reset the board to the PGN/FEN-defined starting position */
 	async loadInitialPosition() {
 		console.log("Init via user_config");

@@ -1,4 +1,4 @@
-import { setIcon, Setting } from "obsidian";
+import { Notice, setIcon, Setting } from "obsidian";
 import { Chesser } from "./Chesser";
 import startingPositons from "./startingPositions";
 
@@ -70,7 +70,7 @@ export default class ChesserMenu {
           toggle.onChange((value) => {
             this.chesser.setFreeMove(value);
           });
-        });
+        }).settingEl.classList.add("chesser-hide-setting");
       });
     });
 
@@ -87,53 +87,76 @@ export default class ChesserMenu {
   }
 
   createToolbar() {
-    const btnContainer = this.containerEl.createDiv("chess-toolbar-container");
-    btnContainer.createEl("a", "view-action", (btn: HTMLAnchorElement) => {
-      btn.ariaLabel = "Flip board";
-      setIcon(btn, "switch");
-      btn.addEventListener("click", (e: MouseEvent) => {
-        e.preventDefault();
-        this.chesser.flipBoard();
+      const btnContainer = this.containerEl.createDiv("chess-toolbar-container");
+      btnContainer.createEl("a", "view-action", (btn) => {
+          btn.ariaLabel = "Flip board";
+          setIcon(btn, "switch");
+          btn.addEventListener("click", (e) => {
+              e.preventDefault();
+              this.chesser.flipBoard();
+          });
       });
-    });
-
-    btnContainer.createEl("a", "view-action", (btn: HTMLAnchorElement) => {
-      btn.ariaLabel = "Reset";
-      setIcon(btn, "restore-file-glyph");
-      btn.addEventListener("click", (e: MouseEvent) => {
-        e.preventDefault();
-        while (this.chesser.currentMoveIdx >= 0) {
-          this.chesser.undo_move();
-        }
+      btnContainer.createEl("a", "view-action", (btn) => {
+          btn.ariaLabel = "Home";
+          setIcon(btn, "house");
+          btn.addEventListener("click", (e) => {
+              e.preventDefault();
+              while (this.chesser.currentMoveIdx >= 0) {
+                  this.chesser.undo_move();
+              }
+          });
       });
-    });
-
-    btnContainer.createEl("a", "view-action", (btn: HTMLAnchorElement) => {
-      btn.ariaLabel = "Undo";
-      setIcon(btn, "left-arrow");
-      btn.addEventListener("click", (e: MouseEvent) => {
-        e.preventDefault();
-        this.chesser.undo_move();
+      btnContainer.createEl("a", "view-action", (btn) => {
+        btn.ariaLabel = "Init";
+        setIcon(btn, "rotate-ccw");
+        btn.addEventListener("click", async (e) => {
+            e.preventDefault();
+            await this.chesser.loadInitialPosition();
+        });
       });
-    });
-
-    btnContainer.createEl("a", "view-action", (btn: HTMLAnchorElement) => {
-      btn.ariaLabel = "Redo";
-      setIcon(btn, "right-arrow");
-      btn.addEventListener("click", (e: MouseEvent) => {
-        e.preventDefault();
-        this.chesser.redo_move();
+      btnContainer.createEl("a", "view-action", (btn) => {
+          btn.ariaLabel = "Copy FEN";
+          setIcon(btn, "two-blank-pages");
+          btn.addEventListener("click", async (e) => {
+            e.preventDefault();
+            try {
+              await navigator.clipboard.writeText(this.chesser.getFen());
+              new Notice("FEN copié !");
+            } catch {
+              new Notice("Erreur lors de la copie du FEN");
+            }
+          });
       });
-    });
-
-    btnContainer.createEl("a", "view-action", (btn: HTMLAnchorElement) => {
-      btn.ariaLabel = "Copy FEN";
-      setIcon(btn, "two-blank-pages");
-      btn.addEventListener("click", (e: MouseEvent) => {
-        e.preventDefault();
-        navigator.clipboard.writeText(this.chesser.getFen());
+      btnContainer.createEl("a", "view-action", (btn) => {
+        btn.ariaLabel = "Copy PGN";
+        setIcon(btn, "scroll-text");
+        btn.addEventListener("click", async (e) => {
+          e.preventDefault();
+          const content = this.chesser.getPgn();
+          try {
+            await navigator.clipboard.writeText(content);
+            new Notice("PGN copié !");
+          } catch {
+            new Notice("Erreur lors de la copie du PGN");
+          }
+        });
       });
-    });
+      btnContainer.createEl("a", "view-action", (btn) => {
+          btn.ariaLabel = "Undo";
+          setIcon(btn, "left-arrow");
+          btn.addEventListener("click", (e) => {
+              e.preventDefault();
+              this.chesser.undo_move();
+          });
+      });
+      btnContainer.createEl("a", "view-action", (btn) => {
+          btn.ariaLabel = "Redo";
+          setIcon(btn, "right-arrow");
+          btn.addEventListener("click", (e) => {
+              e.preventDefault();
+              this.chesser.redo_move();
+          });
+      });
   }
 
   redrawMoveList() {

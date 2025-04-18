@@ -1,0 +1,10 @@
+{
+  "id": "chesser-custom",
+  "name": "Chesser",
+  "version": "0.2.1-custom",
+  "minAppVersion": "0.9.12",
+  "description": "Customized Chesser plugin with vault-based PGN/FEN initialization, persistent storage, and mobile-friendly layout.",
+  "author": "VincentB. (forked from SilentVoid)",
+  "authorUrl": "https://github.com/nugej/Chesser",
+  "isDesktopOnly": false
+}

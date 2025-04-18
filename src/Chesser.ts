@@ -18,6 +18,7 @@ import { DrawShape } from "chessground/draw";
 import { ChesserConfig, parse_user_config } from "./ChesserConfig";
 import { ChesserSettings } from "./ChesserSettings";
 import ChesserMenu from "./menu";
+import { StartingPosition } from './startingPositions';
 
 // To bundle all css files in styles.css with rollup
 import "../assets/custom.css";
@@ -67,18 +68,46 @@ export function draw_chessboard(app: App, settings: ChesserSettings) {
   };
 }
 
-function read_state(id: string) {
-  const savedDataStr = localStorage.getItem(`chesser-${id}`);
+// PATCH : Replaces `localStorage` with persistent storage in the vault
+declare const app: App;
+async function write_state(id: string, state: any) {
+  const fileName = `.ChesserStorage/${id}.json`;
+  const content = JSON.stringify(state, null, 2);
+
+  const adapter = app.vault.adapter;
+
   try {
-    return JSON.parse(savedDataStr);
-  } catch (e) {
-    console.error(e);
+    const exists = await adapter.exists(fileName);
+    if (exists) {
+      await adapter.write(fileName, content);
+    } else {
+      // Check that the folder exists
+      const folderPath = `.ChesserStorage`;
+      const folderExists = await adapter.exists(folderPath);
+      if (!folderExists) {
+        await adapter.mkdir(folderPath);
+      }
+      await adapter.write(fileName, content);
+    }
+  } catch (err) {
+    console.error("Error writing file .json :", err);
   }
-  return {};
 }
 
-function write_state(id: string, game_state: ChesserConfig) {
-  localStorage.setItem(`chesser-${id}`, JSON.stringify(game_state));
+async function read_state(id: string) {
+  const fileName = `.ChesserStorage/${id}.json`;
+  const adapter = app.vault.adapter;
+
+  try {
+    const exists = await adapter.exists(fileName);
+    if (!exists) return null;
+
+    const content = await adapter.read(fileName);
+    return JSON.parse(content);
+  } catch (err) {
+    console.error("Error reading or parsing JSON :", err);
+    return null;
+  }
 }
 
 export class Chesser extends MarkdownRenderChild {
@@ -91,6 +120,9 @@ export class Chesser extends MarkdownRenderChild {
 
   private menu: ChesserMenu;
   private moves: Move[];
+
+  private user_config: any;
+  private startingPosition: StartingPosition;
 
   public currentMoveIdx: number;
 
@@ -109,6 +141,7 @@ export class Chesser extends MarkdownRenderChild {
 
     const saved_config = read_state(this.id);
     const config = Object.assign({}, user_config, saved_config);
+    this.user_config = user_config;  // required for the function loadInitialPosition()
 
     this.sync_board_with_gamestate = this.sync_board_with_gamestate.bind(this);
     this.save_move = this.save_move.bind(this);
@@ -123,13 +156,35 @@ export class Chesser extends MarkdownRenderChild {
       });
     }
 
-    if (config.pgn) {
-      debug(() => console.debug("loading from pgn", config.pgn));
-      this.chess.load_pgn(config.pgn);
-    } else if (config.fen) {
-      debug(() => console.debug("loading from fen", config.fen));
-      this.chess.load(config.fen);
-    }
+    /* Allows user to define a PGN directly in the code block */
+		if (config.pgn?.trim()) {
+			try {
+				const rawPgn = config.pgn.trim();
+				const normalizedPgn = rawPgn.replace(/(\d+)\s*\./g, '$1.');
+
+				if (!this.chess.load_pgn(normalizedPgn)) {
+					throw new Error("Invalid or incompatible PGN.");
+				}
+
+				const moves = normalizedPgn.replace(/\d+\./g, '').trim().split(/\s+/);
+				const movePairs = [];
+				for (let i = 0; i < moves.length; i += 2) {
+					movePairs.push(moves[i + 1] ? `${moves[i]} ${moves[i + 1]}` : moves[i]);
+				}
+
+				this.startingPosition = new StartingPosition(
+					"Xxx", "Custom", this.chess.fen(), "Custom", movePairs
+				);
+
+			} catch (e) {
+				console.error("PGN loading error:", e);
+			}
+		}
+
+		if (config.fen) {
+            debug(() => console.debug("loading from fen", config.fen));
+            this.chess.load(config.fen);
+        }
 
     this.moves = config.moves ?? this.chess.history({ verbose: true });
     this.currentMoveIdx = config.currentMoveIdx ?? this.moves.length - 1;
@@ -374,6 +429,11 @@ export class Chesser extends MarkdownRenderChild {
     return this.chess.fen();
   }
 
+  public getPgn() {
+    const pgn = this.chess.pgn();
+    return pgn && pgn.trim() !== '' ? pgn : '1...';
+  }
+
   public loadFen(fen: string, moves?: string[]): void {
     let lastMove: [Key, Key] = undefined;
     if (moves) {
@@ -400,4 +460,32 @@ export class Chesser extends MarkdownRenderChild {
     this.cg.set({ fen: this.chess.fen(), lastMove });
     this.sync_board_with_gamestate();
   }
+
+	/* Adds an "Init" button to reset the board to the PGN/FEN-defined starting position */
+	async loadInitialPosition() {
+		console.log("Init via user_config");
+
+		if (this.user_config?.pgn && this.user_config.pgn.trim() !== "") {
+			console.log("PGN to load :", this.user_config.pgn);
+			const loaded = this.chess.load_pgn(this.user_config.pgn);
+
+			if (!loaded) {
+				console.warn("Invalid PGN !");
+				new Notice("Invalid PGN !");
+				return;
+			}
+
+			this.moves = this.chess.history({ verbose: true });
+			this.currentMoveIdx = -1;
+
+			console.log("Replay moves via update_turn_idx()");
+			this.update_turn_idx(this.moves.length - 1); // ← that's what updates the visual
+		} else {
+			console.log("No PGN defined → complete reset");
+			this.chess.reset();
+			this.moves = [];
+			this.currentMoveIdx = -1;
+			this.sync_board_with_gamestate();
+		}
+	}
 }

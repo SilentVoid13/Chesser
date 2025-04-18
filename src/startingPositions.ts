@@ -1,4 +1,4 @@
-class StartingPosition {
+export class StartingPosition {
   eco: string;
   name: string;
   fen: string;
@@ -14,7 +14,7 @@ class StartingPosition {
   }
 }
 
-class Category {
+export class Category {
   id: string;
   items: StartingPosition[];
 

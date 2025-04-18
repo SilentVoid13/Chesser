@@ -1,5 +1,5 @@
 {
-  "name": "Chesser",
+  "name": "chesser",
   "version": "0.2.1",
   "description": "A chess game viewer/editor",
   "main": "main.js",
@@ -16,15 +16,17 @@
     "@rollup/plugin-typescript": "^6.0.0",
     "@rollup/pluginutils": "^4.1.0",
     "@types/chess.js": "^0.11.2",
-    "@types/node": "^17.0.17",
+    "@types/node": "^18.19.86",
     "detect-indent": "6.1.0",
     "detect-newline": "3.1.0",
     "obsidian": "0.13.21",
     "rollup": "^2.67.2",
+    "rollup-plugin-copy": "^3.5.0",
     "rollup-plugin-css-only": "^3.1.0",
     "stringify-package": "^1.0.1",
     "tslib": "^2.3.1",
-    "typescript": "^4.5.5"
+    "typescript": "^4.5.5",
+    "vite": "^6.3.2"
   },
   "dependencies": {
     "chess.js": "^0.12.1",

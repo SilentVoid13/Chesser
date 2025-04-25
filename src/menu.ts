@@ -137,6 +137,8 @@ export default class ChesserMenu {
   }
 
   redrawMoveList() {
+    const currentScroll = this.movesListEl.find(".chess-move-list")?.scrollTop || 0;
+    let activeElement : HTMLDivElement;
     this.movesListEl.empty();
     this.movesListEl.createDiv({
       text: this.chesser.turn() === "b" ? "Black's turn" : "White's turn",
@@ -150,11 +152,19 @@ export default class ChesserMenu {
           }`,
           text: move.san,
         });
+        if (this.chesser.currentMoveIdx === idx) {
+          activeElement = moveEl;
+        }
         moveEl.addEventListener("click", (ev) => {
           ev.preventDefault();
           this.chesser.update_turn_idx(idx);
         });
       });
+      setTimeout(() => {
+        const activeElementOffsetTop = (activeElement?.offsetTop - moveListEl.offsetTop) || currentScroll;
+        const scrollDifference = activeElementOffsetTop - currentScroll;
+        moveListEl.scrollTop = scrollDifference > 0 && scrollDifference < 200 ? currentScroll : activeElementOffsetTop;
+      }, 0);
     });
   }
 }

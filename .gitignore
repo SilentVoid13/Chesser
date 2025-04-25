@@ -11,3 +11,6 @@ main.js
 *.js.map
 
 RESOURCES.md
+.direnv
+.envrc
+out/

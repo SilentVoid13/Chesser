@@ -9,7 +9,7 @@ import {
   parseYaml,
   stringifyYaml,
 } from "obsidian";
-import { Chess, ChessInstance, Move, Square } from "chess.js";
+import { Chess, Move, SQUARES } from "chess.js";
 import { Chessground } from "chessground";
 import { Api } from "chessground/api";
 import { Color, Key } from "chessground/types";
@@ -21,8 +21,8 @@ import ChesserMenu from "./menu";
 
 // To bundle all css files in styles.css with rollup
 import "../assets/custom.css";
-import "chessground/assets/chessground.base.css";
-import "chessground/assets/chessground.brown.css";
+import "../node_modules/chessground/assets/chessground.base.css";
+import "../node_modules/chessground/assets/chessground.brown.css";
 // Piece styles
 import "../assets/piece-css/alpha.css";
 import "../assets/piece-css/california.css";
@@ -86,7 +86,7 @@ export class Chesser extends MarkdownRenderChild {
 
   private id: string;
   private cg: Api;
-  private chess: ChessInstance;
+  private chess: Chess;
 
   private menu: ChesserMenu;
   private moves: Move[];
@@ -124,7 +124,7 @@ export class Chesser extends MarkdownRenderChild {
 
     if (config.pgn) {
       console.debug("loading from pgn", config.pgn);
-      this.chess.load_pgn(config.pgn);
+      this.chess.loadPgn(config.pgn);
     } else if (config.fen) {
       console.debug("loading from fen", config.fen);
       this.chess.load(config.fen);
@@ -144,7 +144,6 @@ export class Chesser extends MarkdownRenderChild {
     try {
       this.cg = Chessground(containerEl.createDiv(), {
         fen: this.chess.fen(),
-        addDimensionsCssVars: true,
         lastMove,
         orientation: config.orientation as Color,
         viewOnly: config.viewOnly,
@@ -269,7 +268,7 @@ export class Chesser extends MarkdownRenderChild {
 
   public dests(): Map<Key, Key[]> {
     const dests = new Map();
-    this.chess.SQUARES.forEach((s) => {
+    SQUARES.forEach((s) => {
       const ms = this.chess.moves({ square: s, verbose: true });
       if (ms.length)
         dests.set(
@@ -281,7 +280,7 @@ export class Chesser extends MarkdownRenderChild {
   }
 
   public check(): boolean {
-    return this.chess.in_check();
+    return this.chess.inCheck();
   }
 
   public undo_move() {
